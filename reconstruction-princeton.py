@@ -1,5 +1,6 @@
 # reproducing some results from 1704.02654.pdf
 
+from matplotlib import rc
 import matplotlib.pyplot as plt
 from matplotlib.figure import figaspect
 
@@ -23,6 +24,8 @@ def score(network, eta, X_test, y_test):
     attack = lambda n, X: fastgradientsign(n, X, eta=eta)
     return int(100 * adversarial_score(filtered_network, X_test, y_test, attack))
 
+plt.style.use('ggplot')
+rc('text', usetex=True)
 plt.figure(figsize=figaspect(1/2.5))
 
 for n_components in (784, 331, 100, 80, 60, 40, 20):
@@ -42,6 +45,6 @@ for n_components in (784, 331, 100, 80, 60, 40, 20):
 logging.info(f'saving plots in ./reconstruction-princeton.png')
 plt.grid(linestyle='--')
 plt.xlabel('$\eta$')
-plt.ylabel('Adversarial success (%)')
+plt.ylabel('Adversarial success (\%)')
 plt.legend()
 plt.savefig('./reconstruction-princeton.png')
