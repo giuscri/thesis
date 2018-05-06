@@ -11,6 +11,7 @@ requests = "*"
 pandas = "*"
 sklearn = "*"
 matplotlib = "*"
+cleverhans = {git = "https://github.com/tensorflow/cleverhans.git", editable = true}
 
 [dev-packages]
 
