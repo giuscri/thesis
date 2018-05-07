@@ -11,6 +11,8 @@ import tensorflow as tf
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
+import json
+
 from datasets import mnist
 from filters import pcafilter
 from models import fc100_100_10, filtered_fc, train
@@ -30,6 +32,8 @@ plt.style.use('ggplot')
 rc('text', usetex=True)
 plt.figure(figsize=figaspect(1/2.5))
 
+retrain_princeton = {}
+
 for n_components in (784, 331, 100, 80, 60, 40, 20):
     logging.info(f"filtering input retaining {n_components} principal components")
 
@@ -48,6 +52,13 @@ for n_components in (784, 331, 100, 80, 60, 40, 20):
     for eta in np.arange(0.025, 0.25 + step, step):
         result[eta] = score(filtered_network, eta, X_test, y_test)
 
+    retrain_princeton[n_components] = tuple(result.items())
+
+logging.info(f'saving results in ./retrain-princeton.json')
+with open('retrain-princeton.json', 'w') as f: f.write(json.dumps(retrain_princeton))
+
+for n_components in retrain_princeton.keys():
+    result = dict(retrain_princeton[n_components])
     plt.plot(result.keys(), result.values(), 'o', label=f'{n_components} components')
 
 logging.info(f'saving plots in ./retrain-princeton.png')

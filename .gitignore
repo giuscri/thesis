@@ -1,3 +1,4 @@
 model/
 mnist/
 *.png
+*.json
