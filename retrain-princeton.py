@@ -42,11 +42,12 @@ for n_components in (784, 331, 100, 80, 60, 40, 20):
     train(filtered_network, filteredX_train, y_train, epochs=500, store=False)
 
     result = {}
+    result[0.] = 0
 
-    for eta in np.arange(0.005, 0.27, 0.005):
+    step = 0.025
+    for eta in np.arange(0.025, 0.25 + step, step):
         result[eta] = score(filtered_network, eta, X_test, y_test)
 
-    result[0.] = 0
     plt.plot(result.keys(), result.values(), 'o', label=f'{n_components} components')
 
 logging.info(f'saving plots in ./retrain-princeton.png')
