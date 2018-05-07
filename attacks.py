@@ -13,7 +13,7 @@ def fastgradientsign(network, X, eta=0.15):
     """Generate adversarial examples from X using FGS."""
     cleverhans_network = cleverhans.utils_keras.KerasModelWrapper(network)
     attack = cleverhans.attacks.FastGradientMethod(cleverhans_network)
-    examples = attack.generate(network.input, eps=eta, ord=np.inf)
+    examples = attack.generate(network.input, eps=eta, ord=np.inf, clim_min=0., clip_max=1.)
 
     session = keras.backend.get_session()
 
