@@ -63,12 +63,12 @@ def filtered_fc(network, filterfn):
     )
     return filtered_network
 
-def train(network, X_train, y_train, epochs=500, batch_size=500, store=True):
+def train(network, X_train, y_train, epochs=500, batch_size=500, store=True, verbose=True):
     """Train and save model"""
     num_classes = len(np.unique(y_train))
     onehot_y_train = keras.utils.to_categorical(y_train, num_classes=num_classes)
 
-    network.fit(X_train, onehot_y_train, epochs=epochs, batch_size=batch_size)
+    network.fit(X_train, onehot_y_train, epochs=epochs, batch_size=batch_size, verbose=1 if verbose else 0)
     if store: save(network)
     return network
 
