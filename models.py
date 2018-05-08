@@ -74,7 +74,7 @@ def train(network, X_train, y_train, epochs=500, batch_size=500, store=True):
 
 def evaluate(network, X_test, y_test):
     """Evaluate model."""
-    num_classes = len(np.unique(y_test))
+    num_classes = network.output.shape.as_list()[-1]
     onehot_y_test = keras.utils.to_categorical(y_test, num_classes=num_classes)
 
     return network.evaluate(X_test, onehot_y_test)

@@ -9,11 +9,19 @@ import numpy as np
 
 from models import correctly_classified
 
-def fastgradientsign(network, X, eta=0.15):
-    """Generate adversarial examples from X using FGS."""
+def fastgradientsign(network, X, y_target=None, eta=0.15):
+    """Generate adversarial examples from X to y using FGS."""
+    assert y_target is None or len(y_target) == len(X)
+
     cleverhans_network = cleverhans.utils_keras.KerasModelWrapper(network)
     attack = cleverhans.attacks.FastGradientMethod(cleverhans_network)
-    examples = attack.generate(network.input, eps=eta, ord=np.inf, clip_min=0., clip_max=1.)
+
+    if y_target is not None:
+        num_classes = network.output.shape.as_list()[-1]
+        onehot_y_target = keras.utils.to_categorical(y_target, num_classes=num_classes)
+        examples = attack.generate(network.input, y_target=onehot_y_target, eps=eta, ord=np.inf, clip_min=0., clip_max=1.)
+    else:
+        examples = attack.generate(network.input, eps=eta, ord=np.inf, clip_min=0., clip_max=1.)
 
     session = keras.backend.get_session()
 
