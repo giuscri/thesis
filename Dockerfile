@@ -6,4 +6,4 @@ WORKDIR /app
 RUN pip install pipenv==11.10.1
 RUN pipenv install
 
-CMD ["pipenv", "run", "python", "-m", "pytest"]
+CMD ["sh", "-c", "pipenv run python -m pytest --cov-config=.coveragerc --cov=.; pipenv run coveralls"]
