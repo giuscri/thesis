@@ -37,4 +37,4 @@ def test_fgs_targetclass():
     examples = fastgradientsign(network, X_test, y_target=y_target, eta=0.25)
 
     _, accuracy = evaluate(network, examples, y_target)
-    assert 0.65 < accuracy > 0.70
+    assert 0.60 < accuracy < 0.80
