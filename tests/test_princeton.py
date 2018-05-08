@@ -7,7 +7,7 @@ import json
 import numpy as np
 
 def test_recons():
-    command = './princeton.py -c 784 100 -e 0.05 0.1 0.2 --epochs 10'
+    command = 'python princeton.py -c 784 100 -e 0.05 0.1 0.2 --epochs 10'
     process = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
     princeton = json.loads(process.stdout)
 
@@ -26,7 +26,7 @@ def test_recons():
     assert np.allclose(actual, expected, atol=5)
 
 def test_retrain():
-    command = './princeton.py --retrain -c 784 100 -e 0.05 0.1 0.2 --epochs 10'
+    command = 'python princeton.py --retrain -c 784 100 -e 0.05 0.1 0.2 --epochs 10'
     process = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
     princeton = json.loads(process.stdout)
 
