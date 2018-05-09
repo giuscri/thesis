@@ -40,7 +40,7 @@ for n_components in args.c:
     filtered_network = filtered_fc(network, filterfn)
 
     if args.retrain:
-        logging.info('retraining network with filter layer of {n_components}')
+        logging.info(f'retraining network with filter layer of {n_components}')
         train(filtered_network, X_train, y_train, epochs=args.epochs, verbose=args.verbose)
 
     networkdict[n_components] = filtered_network

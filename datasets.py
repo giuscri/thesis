@@ -13,13 +13,33 @@ def mnist():
     if not exists('mnist'): os.mkdir('mnist/')
     if not exists('mnist/train.csv'):
         logging.info('downloading mnist training set')
-        r = requests.get('https://pjreddie.com/media/files/mnist_train.csv')
-        with open('mnist/train.csv', 'w') as f: f.write(r.text)
+        r = requests.get('https://pjreddie.com/media/files/mnist_train.csv', stream=True)
+        contentlength = int(r.headers['Content-Length'])
+        chunk_size = contentlength // 50
+
+        chunks = []
+        for i, chunk in enumerate(r.iter_content(chunk_size=chunk_size)):
+            percentage = 100 * chunk_size * i // contentlength
+            logging.info(f'downloaded {percentage}% ...')
+            chunks.append(chunk)
+
+        text = b''.join(chunks).decode()
+        with open('mnist/train.csv', 'w') as f: f.write(text)
 
     if not exists('mnist/test.csv'):
         logging.info('downloading mnist test set')
-        r = requests.get('https://pjreddie.com/media/files/mnist_test.csv')
-        with open('mnist/test.csv', 'w') as f: f.write(r.text)
+        r = requests.get('https://pjreddie.com/media/files/mnist_test.csv', stream=True)
+        contentlength = int(r.headers['Content-Length'])
+        chunk_size = contentlength // 50
+
+        chunks = []
+        for i, chunk in enumerate(r.iter_content(chunk_size=chunk_size)):
+            percentage = 100 * chunk_size * i // contentlength
+            logging.info(f'downloaded {percentage}% ...')
+            chunks.append(chunk)
+
+        text = b''.join(chunks).decode()
+        with open('mnist/test.csv', 'w') as f: f.write(text)
 
     names = ['label'] + [f'pixel{i}' for i in range(784)]
 
