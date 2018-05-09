@@ -35,14 +35,20 @@ train(network, X_train, y_train, epochs=args.epochs, verbose=args.verbose)
 networkdict = {}
 
 for n_components in args.c:
+    logging.info(f'building network with filter layer of {n_components}')
     filterfn = pcafilter(X_train, n_components=n_components)
     filtered_network = filtered_fc(network, filterfn)
-    if args.retrain: train(filtered_network, X_train, y_train, epochs=args.epochs, verbose=args.verbose)
+
+    if args.retrain:
+        logging.info('retraining network with filter layer of {n_components}')
+        train(filtered_network, X_train, y_train, epochs=args.epochs, verbose=args.verbose)
+
     networkdict[n_components] = filtered_network
 
 result = {}
 
 for n_components, eta in itertools.product(args.c, args.e):
+    logging.info(f'computing score for combination: ({n_components}, {eta})')
     attack = lambda n, X: fastgradientsign(n, X, eta=eta)
     score = int(100 * adversarial_score(networkdict[n_components], X_test, y_test, attack))
     result[(n_components, eta)] = score

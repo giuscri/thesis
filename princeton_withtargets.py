@@ -36,6 +36,7 @@ train(network, X_train, y_train, epochs=args.epochs, verbose=args.verbose)
 networkdict = {}
 
 for n_components in args.c:
+    logging.info(f'builiding network with filter layer of {n_components}')
     filterfn = pcafilter(X_train, n_components=n_components)
     filtered_network = filtered_fc(network, filterfn)
     networkdict[n_components] = filtered_network
