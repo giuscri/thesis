@@ -72,12 +72,12 @@ def train(network, X_train, y_train, epochs=500, batch_size=500, store=True, ver
     if store: save(network)
     return network
 
-def evaluate(network, X_test, y_test):
+def evaluate(network, X_test, y_test, verbose=True):
     """Evaluate model."""
     num_classes = network.output.shape.as_list()[-1]
     onehot_y_test = keras.utils.to_categorical(y_test, num_classes=num_classes)
 
-    return network.evaluate(X_test, onehot_y_test)
+    return network.evaluate(X_test, onehot_y_test, verbose=1 if verbose else 0)
 
 def correctly_classified(network, X, y):
     """Filter correctly classified examples."""
