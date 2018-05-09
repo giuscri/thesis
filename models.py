@@ -1,11 +1,11 @@
-from os.path import exists
+import os
 
 import keras
 
 import numpy as np
 
 def save(network):
-    if not exists('model/'): os.mkdir('model/')
+    if not os.path.exists('model/'): os.mkdir('model/')
     network.save('model/latest.h5')
     return network
 
@@ -14,7 +14,7 @@ def load():
 
 def fc100_100_10():
     """Create or load FC100-100-10 network."""
-    if exists('model/latest.h5'): return load()
+    if os.path.exists('model/latest.h5'): return load()
 
     network = keras.models.Sequential([
         keras.layers.Flatten(batch_input_shape=(None, 28, 28)),
@@ -63,7 +63,7 @@ def filtered_fc(network, filterfn):
     )
     return filtered_network
 
-def train(network, X_train, y_train, epochs=500, batch_size=500, store=True, verbose=True):
+def train(network, X_train, y_train, epochs=500, batch_size=500, store=False, verbose=True):
     """Train and save model"""
     num_classes = len(np.unique(y_train))
     onehot_y_train = keras.utils.to_categorical(y_train, num_classes=num_classes)
