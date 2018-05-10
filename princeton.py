@@ -2,7 +2,7 @@
 
 import numpy as np
 
-import itertools, argparse, pickle, sys, logging
+import itertools, argparse, pickle, sys, logging, os
 
 from datasets import mnist
 from filters import pcafilter
@@ -26,7 +26,7 @@ parser.add_argument('-e', nargs='+', type=float, default=[0.05, 0.1, 0.15, 0.2, 
 
 args = parser.parse_args()
 
-filename = 'princeton.recons' if args.retrain else 'princeton.retrain'
+filename = 'princeton.retrain' if args.retrain else 'princeton.recons'
 
 X_train, y_train, X_test, y_test = mnist()
 network = fc100_100_10()
@@ -60,26 +60,41 @@ else:
 
 if args.save:
     logging.info(f'saving result in {filename}.pkl')
-    pickle.dump(result, f'{filename}.pkl')
+    with open(f'{filename}.pkl', 'wb') as f: pickle.dump(result, f)
 
 if args.plot:
+    import matplotlib
+
+    x11 = 'DISPLAY' in os.environ
+
+    if x11:
+        matplotlib.rc('text', usetex=True)
+    if not x11:
+        matplotlib.use('Agg')
+
     import matplotlib.pyplot
     import matplotlib.figure
-    import matplotlib.rc
 
-    logging.info(f'saving plots in {filename}.png')
+    matplotlib.pyplot.style.use('ggplot')
+    matplotlib.pyplot.figure(figsize=matplotlib.figure.figaspect(1/2.5))
+    matplotlib.pyplot.grid(linestyle='--')
+    matplotlib.pyplot.xlabel('$\eta$')
+    matplotlib.pyplot.ylabel('Adversarial success (\%)')
 
-    for n_components, eta in result:
-        score = result[(n_components, eta)]
-        pyplot.plot(eta, score, 'o', label=f'{n_components} components')
+    for n_components in args.c:
+        x, y = [], []
+        for _, eta in filter(lambda k: k[0] == n_components, result):
+            score = result[(n_components, eta)]
+            x.append(eta)
+            y.append(score)
 
-    matplotlib.rc('text', usetex=True)
-    pyplot.style.use('ggplot')
-    pyplot.figure(figsize=figaspect(1/2.5))
-    pyplot.grid(linestyle='--')
-    pyplot.xlabel('$\eta$')
-    pyplot.ylabel('Adversarial success (\%)')
-    pyplot.legend()
+        matplotlib.pyplot.plot(x, y, 'o', label=f'{n_components} components')
+
+    matplotlib.pyplot.legend()
+
     if args.save:
         logging.info(f'saving plot in {filename}.png')
-        pyplot.savefig(f'{filename}.png')
+        matplotlib.pyplot.savefig(f'{filename}.png')
+    else:
+        matplotlib.pyplot.show()
+

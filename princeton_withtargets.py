@@ -2,7 +2,7 @@
 
 import numpy as np
 
-import logging, argparse, itertools, sys, pickle
+import logging, argparse, itertools, sys, pickle, os.path
 
 from datasets import mnist
 from filters import pcafilter
@@ -64,4 +64,4 @@ else:
 
 if args.save:
     logging.info(f'saving result in {filename}.pkl')
-    pickle.dump(result, f'{filename}.pkl')
+    with open(f'{filename}.pkl', 'wb') as f: pickle.dump(result, f)

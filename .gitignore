@@ -3,3 +3,4 @@ mnist/
 .coverage
 *.png
 *.json
+*.pkl

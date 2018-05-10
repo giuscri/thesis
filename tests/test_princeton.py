@@ -1,6 +1,6 @@
 from .context import models
 
-import subprocess, pickle
+import subprocess, pickle, os.path
 
 import numpy as np
 
@@ -33,3 +33,10 @@ def test_retrain():
     expected = np.array([16, 49, 92])
     actual = np.array([result[(100, 0.05)], result[(100, 0.1)], result[(100, 0.2)]])
     assert np.allclose(actual, expected, atol=5)
+
+def test_save():
+    command = 'python princeton.py -c 784 -e 0.05 --epochs 0 --pickle --save --plot'
+    process = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
+
+    assert os.path.exists('princeton.recons.pkl')
+    assert os.path.exists('princeton.recons.png')
