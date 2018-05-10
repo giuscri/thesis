@@ -17,7 +17,7 @@ def mnist():
         logging.info('downloading mnist training set')
         r = requests.get('https://pjreddie.com/media/files/mnist_train.csv', stream=True)
         contentlength = int(r.headers['Content-Length'])
-        nchunks = 50
+        nchunks = 420
         chunk_size = contentlength // nchunks
         total = nchunks if contentlength % nchunks == 0 else nchunks + 1
 
@@ -32,7 +32,7 @@ def mnist():
         logging.info('downloading mnist test set')
         r = requests.get('https://pjreddie.com/media/files/mnist_test.csv', stream=True)
         contentlength = int(r.headers['Content-Length'])
-        nchunks = 50
+        nchunks = 420
         chunk_size = contentlength // nchunks
         total = nchunks if contentlength % nchunks == 0 else nchunks + 1
 

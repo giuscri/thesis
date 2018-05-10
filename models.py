@@ -63,7 +63,7 @@ def filtered_fc(network, filterfn):
     )
     return filtered_network
 
-def train(network, X_train, y_train, epochs=500, batch_size=500, store=False, verbose=True):
+def train(network, X_train, y_train, epochs=500, batch_size=500, store=False, verbose=False):
     """Train and save model"""
     num_classes = len(np.unique(y_train))
     onehot_y_train = keras.utils.to_categorical(y_train, num_classes=num_classes)
@@ -72,7 +72,7 @@ def train(network, X_train, y_train, epochs=500, batch_size=500, store=False, ve
     if store: save(network)
     return network
 
-def evaluate(network, X_test, y_test, verbose=True):
+def evaluate(network, X_test, y_test, verbose=False):
     """Evaluate model."""
     num_classes = network.output.shape.as_list()[-1]
     onehot_y_test = keras.utils.to_categorical(y_test, num_classes=num_classes)

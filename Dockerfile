@@ -1,9 +1,22 @@
-FROM python:3.6-stretch
+FROM ubuntu:18.04
 
-COPY . /app
 WORKDIR /app
+COPY Pipfile Pipfile
+COPY Pipfile.lock Pipfile.lock
 
-RUN pip install pipenv==11.10.1
-RUN pipenv install
+RUN apt update
 
-CMD ["sh", "-c", "pipenv run python -m pytest -v --cov-config=.coveragerc --cov=. && pipenv run coveralls"]
+RUN apt install -y git
+
+RUN apt install -y python3
+RUN apt install -y python3-pip
+
+RUN pip3 install pipenv==11.10.1
+
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8 
+
+RUN pipenv install --system
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+COPY . .
