@@ -14,6 +14,7 @@ matplotlib = "*"
 cleverhans = {git = "https://github.com/tensorflow/cleverhans.git", editable = true}
 pytest-cov = "*"
 coveralls = "*"
+tqdm = "*"
 
 [dev-packages]
 

@@ -15,17 +15,20 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--epochs', type=int, default=500)
 
+parser.add_argument('--plot', action='store_true')
 parser.add_argument('--save', action='store_true')
 parser.add_argument('--verbose', action='store_true')
-parser.add_argument('--pickle', action='store_true')
+parser.add_argument('--pickle', action='store_true', help='print result encoded as pickle')
 
-parser.add_argument('-c', nargs='+', type=int, default=[784, 331, 100, 80, 60, 40, 20])
-parser.add_argument('-e', nargs='+', type=float, default=[0.05, 0.1, 0.15, 0.2, 0.25])
+parser.add_argument('-c', nargs='+', type=int, default=[784, 331, 100, 80, 60, 40, 20], help='number of principal components to retain')
+parser.add_argument('-e', nargs='+', type=float, default=[0.05, 0.1, 0.15, 0.2, 0.25], help='value of eta to use for FGS')
 
 parser.add_argument('--source', nargs='+', type=int, default=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 parser.add_argument('--destination', nargs='+', type=int, default=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
 
 args = parser.parse_args()
+
+if args.plot: print('TODO'); sys.exit(0)
 
 filename = 'princeton_withtargets'
 

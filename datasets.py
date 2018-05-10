@@ -8,6 +8,8 @@ import pandas as pd
 
 import numpy as np
 
+from tqdm import tqdm
+
 def mnist():
     """Fetch, parse and return mnist data."""
     if not exists('mnist'): os.mkdir('mnist/')
@@ -15,12 +17,12 @@ def mnist():
         logging.info('downloading mnist training set')
         r = requests.get('https://pjreddie.com/media/files/mnist_train.csv', stream=True)
         contentlength = int(r.headers['Content-Length'])
-        chunk_size = contentlength // 50
+        nchunks = 50
+        chunk_size = contentlength // nchunks
+        total = nchunks if contentlength % nchunks == 0 else nchunks + 1
 
         chunks = []
-        for i, chunk in enumerate(r.iter_content(chunk_size=chunk_size)):
-            percentage = 100 * chunk_size * i // contentlength
-            logging.info(f'downloaded {percentage}% ...')
+        for i, chunk in tqdm(enumerate(r.iter_content(chunk_size=chunk_size)), total=total):
             chunks.append(chunk)
 
         text = b''.join(chunks).decode()
@@ -30,12 +32,12 @@ def mnist():
         logging.info('downloading mnist test set')
         r = requests.get('https://pjreddie.com/media/files/mnist_test.csv', stream=True)
         contentlength = int(r.headers['Content-Length'])
-        chunk_size = contentlength // 50
+        nchunks = 50
+        chunk_size = contentlength // nchunks
+        total = nchunks if contentlength % nchunks == 0 else nchunks + 1
 
         chunks = []
-        for i, chunk in enumerate(r.iter_content(chunk_size=chunk_size)):
-            percentage = 100 * chunk_size * i // contentlength
-            logging.info(f'downloaded {percentage}% ...')
+        for i, chunk in tqdm(enumerate(r.iter_content(chunk_size=chunk_size)), total=total):
             chunks.append(chunk)
 
         text = b''.join(chunks).decode()
