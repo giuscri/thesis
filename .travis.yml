@@ -5,4 +5,4 @@ services:
 
 script:
   - docker build -t thesis -f Dockerfile .
-  - docker run --rm thesis /bin/bash -c "python -m pytest -v tests/ && coveralls"
+  - docker run --rm thesis /bin/bash -c "python -m pytest -sv --cov=. --cov-config=.coveragerc tests/ && coveralls"
