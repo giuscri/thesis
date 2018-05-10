@@ -11,7 +11,7 @@ requests = "*"
 pandas = "*"
 sklearn = "*"
 matplotlib = "*"
-cleverhans = {git = "https://github.com/tensorflow/cleverhans.git", editable = true}
+cleverhans = {git = "https://github.com/tensorflow/cleverhans.git"}
 pytest-cov = "*"
 coveralls = "*"
 tqdm = "*"
