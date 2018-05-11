@@ -1,5 +1,4 @@
 model/
-mnist/
 .pytest_cache
 .coverage
 __pycache__
