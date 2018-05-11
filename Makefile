@@ -11,3 +11,6 @@ pytest:
 
 install:
 	pipenv install
+
+clean:
+	for f in `cat .dockerignore`; do rm -rf $$f; done
