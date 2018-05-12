@@ -1,7 +1,7 @@
 # Thesis
 
 [![Build Status](https://travis-ci.com/giuscri/thesis.svg?token=bzmoaCvPF1vTKtRyezHu&branch=master)](https://travis-ci.com/giuscri/thesis)
-[![Coverage Status](https://coveralls.io/repos/github/giuscri/thesis/badge.svg)](https://coveralls.io/github/giuscri/thesis)
+[![Coverage Status](https://img.shields.io/coveralls/github/giuscri/thesis.svg)](https://coveralls.io/github/giuscri/thesis)
 
 ## Docker
 `make dockerbuild` builds a docker image tagged as `thesis` with the needed
