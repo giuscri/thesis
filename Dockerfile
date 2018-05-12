@@ -24,3 +24,6 @@ RUN ln -s /usr/share/zoneinfo/Europe/Rome /etc/localtime
 RUN apt install -y python3-tk
 
 COPY . .
+
+RUN /bin/bash -c "git branch -f master HEAD || true"
+RUN /bin/bash -c "git checkout master"
