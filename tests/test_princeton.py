@@ -1,6 +1,6 @@
 from .context import models
 
-import subprocess, pickle, os.path
+import subprocess, pickle, os, pytest
 
 import numpy as np
 
@@ -34,9 +34,10 @@ def test_retrain():
     actual = np.array([result[(100, 0.05)], result[(100, 0.1)], result[(100, 0.2)]])
     assert np.allclose(actual, expected, atol=5)
 
+@pytest.mark.skipif('DISPLAY' in os.environ, reason='blocks test suite inside X')
 def test_save():
     command = 'python princeton.py -c 784 -e 0.05 --epochs 0 --pickle --save --plot'
-    process = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
+    process = subprocess.run(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
 
     assert os.path.exists('princeton.recons.pkl')
-    assert os.path.exists('princeton.recons.png')
+    assert 'DISPLAY' in os.environ or b'no $DISPLAY environment variable' in process.stderr # check princeton.py will try to call plt.show()

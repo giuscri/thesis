@@ -63,38 +63,29 @@ if args.save:
     with open(f'{filename}.pkl', 'wb') as f: pickle.dump(result, f)
 
 if args.plot:
-    import matplotlib
+    from matplotlib import rc
+    rc('text', usetex=True)
 
-    x11 = 'DISPLAY' in os.environ
+    from matplotlib.figure import figaspect
+    from matplotlib import pyplot as plt # awful standard alias ...
 
-    if x11:
-        matplotlib.rc('text', usetex=True)
-    if not x11:
-        matplotlib.use('Agg')
-
-    import matplotlib.pyplot
-    import matplotlib.figure
-
-    matplotlib.pyplot.style.use('ggplot')
-    matplotlib.pyplot.figure(figsize=matplotlib.figure.figaspect(1/2.5))
-    matplotlib.pyplot.grid(linestyle='--')
-    matplotlib.pyplot.xlabel('$\eta$')
-    matplotlib.pyplot.ylabel('Adversarial success (\%)')
+    plt.style.use('ggplot')
+    plt.figure(figsize=figaspect(1/2.5))
+    plt.grid(linestyle='--')
+    plt.xlabel('$\eta$')
+    plt.ylabel('Adversarial success (\%)')
 
     for n_components in args.c:
         x, y = [], []
         for _, eta in filter(lambda k: k[0] == n_components, result):
-            score = result[(n_components, eta)]
             x.append(eta)
-            y.append(score)
+            y.append(result[(n_components, eta)])
+        plt.plot(x, y, 'o', label=f'{n_components} components')
 
-        matplotlib.pyplot.plot(x, y, 'o', label=f'{n_components} components')
-
-    matplotlib.pyplot.legend()
+    plt.legend()
 
     if args.save:
         logging.info(f'saving plot in {filename}.png')
-        matplotlib.pyplot.savefig(f'{filename}.png')
-    else:
-        matplotlib.pyplot.show()
+        plt.savefig(f'{filename}.png')
 
+    plt.show()

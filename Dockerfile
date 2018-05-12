@@ -20,4 +20,7 @@ COPY Pipfile.lock Pipfile.lock
 
 RUN pipenv install --system
 
+RUN ln -s /usr/share/zoneinfo/Europe/Rome /etc/localtime
+RUN apt install -y python3-tk
+
 COPY . .
