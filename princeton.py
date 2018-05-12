@@ -30,7 +30,9 @@ filename = 'princeton.retrain' if args.retrain else 'princeton.recons'
 
 X_train, y_train, X_test, y_test = mnist()
 network = fc100_100_10()
-train(network, X_train, y_train, epochs=args.epochs, verbose=args.verbose)
+
+if not args.retrain: # train networks only once
+    train(network, X_train, y_train, epochs=args.epochs, verbose=args.verbose)
 
 networkdict = {}
 
@@ -40,9 +42,8 @@ for n_components in args.c:
     filtered_network = filtered_fc(network, filterfn)
 
     if args.retrain:
-        logging.info(f'retraining network with filter layer of {n_components}')
+        logging.info(f'training network with filter layer of {n_components}')
         train(filtered_network, X_train, y_train, epochs=args.epochs, verbose=args.verbose)
-
     networkdict[n_components] = filtered_network
 
 result = {}

@@ -26,11 +26,11 @@ def test_retrain():
 
     assert len(result.keys()) == 6
 
-    expected = np.array([21, 62, 96])
+    expected = np.array([21, 54, 94])
     actual = np.array([result[(784, 0.05)], result[(784, 0.1)], result[(784, 0.2)]])
     assert np.allclose(actual, expected, atol=5)
 
-    expected = np.array([16, 49, 92])
+    expected = np.array([16, 42, 88])
     actual = np.array([result[(100, 0.05)], result[(100, 0.1)], result[(100, 0.2)]])
     assert np.allclose(actual, expected, atol=5)
 
