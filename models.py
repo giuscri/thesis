@@ -36,8 +36,12 @@ def fc100_100_10():
 
     return network
 
+FILTEREDFCCACHE = {}
+
 def filtered_fc(network, filterfn):
     """Prepend filter layer to `network`."""
+    if (network, filterfn) in FILTEREDFCCACHE:
+        return FILTEREDFCCACHE[(network, filterfn)]
     batch_shape = network.input.shape.as_list()
     dtype = network.input.dtype
     input = keras.layers.Input(batch_shape=batch_shape, dtype=dtype)
@@ -61,6 +65,7 @@ def filtered_fc(network, filterfn):
         loss=network.loss,
         metrics=network.metrics
     )
+    FILTEREDFCCACHE[(network, filterfn)] = filtered_network
     return filtered_network
 
 def train(network, X_train, y_train, epochs=500, batch_size=500, store=False, verbose=False):
