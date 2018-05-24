@@ -1,6 +1,6 @@
-model/
-mnist/
-.coverage
+/model/
+/mnist/
+/.coverage
 *.png
 *.json
 *.pkl

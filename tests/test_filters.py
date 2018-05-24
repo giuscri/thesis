@@ -1,6 +1,6 @@
 from .context import filters, datasets
 
-from filters import pcafilter
+from filters import PCAFilterLayer
 from datasets import mnist
 
 import tensorflow as tf
@@ -19,9 +19,10 @@ def test_pcafilter_784components():
     filteredimage = sklearnfilter.inverse_transform(sklearnfilter.transform(flatimage))
     expected = filteredimage.reshape(-1, 28, 28)
 
-    actualfilter = pcafilter(X_train)
-    tensor = actualfilter(flatimage)
-    with tf.Session() as session: actual = session.run(tensor)
+    actualfilter = PCAFilterLayer(X_train)
+    flatimage_sym = tf.placeholder(tf.float32)
+    with tf.Session() as session:
+        actual = session.run(actualfilter(flatimage_sym), feed_dict={flatimage_sym: flatimage})
 
     assert np.allclose(actual, expected, atol=0.001)
 
@@ -35,8 +36,9 @@ def test_pcafilter_100components():
     filteredimage = sklearnfilter.inverse_transform(sklearnfilter.transform(flatimage))
     expected = filteredimage.reshape(-1, 28, 28)
 
-    actualfilter = pcafilter(X_train, n_components=100)
-    tensor = actualfilter(flatimage)
-    with tf.Session() as session: actual = session.run(tensor)
+    actualfilter = PCAFilterLayer(X_train, 100)
+    flatimage_sym = tf.placeholder(tf.float32)
+    with tf.Session() as session:
+        actual = session.run(actualfilter(flatimage_sym), feed_dict={flatimage_sym: flatimage})
 
     assert np.allclose(actual, expected, atol=0.001)
