@@ -2,6 +2,6 @@
 /mnist/
 /tensorboardlogs/
 /.coverage
+/.dockerignore
 *.png
 *.json
-*.pkl

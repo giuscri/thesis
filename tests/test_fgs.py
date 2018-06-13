@@ -1,10 +1,11 @@
-from .context import models
+from .context import tools
+from tools import models
 
 import subprocess, json, os, pytest, shutil
 import numpy as np
 
 def test_recons():
-    command = 'python fgs.py -mods tests/model/pca/reconstruction/784.h5 tests/model/pca/reconstruction/100.h5 -etas 0.05 0.1 0.2'
+    command = 'python bin/fgs.py -mods tests/model/pca/reconstruction/784.h5 tests/model/pca/reconstruction/100.h5 -etas 0.05 0.1 0.2'
     process = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
     shutil.rmtree('fgs/')
     result = json.loads(process.stdout.decode())
@@ -22,7 +23,7 @@ def test_recons():
     assert np.allclose(actual, expected, atol=5)
 
 def test_retrain():
-    command = 'python fgs.py -mods tests/model/pca/retrain/784.h5 tests/model/pca/retrain/100.h5 -etas 0.05 0.1 0.2'
+    command = 'python bin/fgs.py -mods tests/model/pca/retrain/784.h5 tests/model/pca/retrain/100.h5 -etas 0.05 0.1 0.2'
     process = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
     shutil.rmtree('fgs/')
     result = json.loads(process.stdout)
@@ -41,7 +42,7 @@ def test_retrain():
 
 @pytest.mark.skipif('DISPLAY' in os.environ, reason='blocks test suite inside X')
 def test_save():
-    command = 'python fgs.py -mods tests/model/pca/reconstruction/784.h5 -etas 0.05 -plot'
+    command = 'python bin/fgs.py -mods tests/model/pca/reconstruction/784.h5 -etas 0.05 -plot'
     process = subprocess.run(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
 
     assert 'DISPLAY' in os.environ or b'no $DISPLAY environment variable' in process.stderr # check fgs.py will try to call plt.show()

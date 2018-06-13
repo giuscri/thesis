@@ -1,7 +1,7 @@
-from .context import attacks
-from attacks import fastgradientsign, adversarial_score
-from models import fc100_100_10, train, evaluate
-from datasets import mnist
+from .context import tools
+from tools.attacks import fastgradientsign, adversarial_score
+from tools.models import fc100_100_10, train, evaluate
+from tools.datasets import mnist
 
 import numpy as np
 

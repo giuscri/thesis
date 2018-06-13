@@ -7,7 +7,7 @@ import keras
 
 import numpy as np
 
-from models import correctly_classified
+from .models import correctly_classified
 
 FGSCACHE = {} # cache of tf symbolic variables indexed by (withtarget, network, X.shape[1:])
 

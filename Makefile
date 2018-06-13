@@ -1,6 +1,7 @@
 all: dockerbuild
 
 dockerbuild:
+	git ls-files --directory --ignored --exclude-standard --others | tee .dockerignore
 	sudo docker build -t thesis -f Dockerfile .
 
 dockertest: dockerbuild
@@ -13,4 +14,4 @@ install:
 	pipenv install
 
 clean:
-	for f in `cat .dockerignore`; do rm -rf $$f; done
+	[[ -f .dockerignore ]] && rm -rf `cat .dockerignore`

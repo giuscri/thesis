@@ -5,10 +5,11 @@ import numpy as np
 import itertools, argparse, json, sys, logging, os
 from binascii import hexlify
 
-from datasets import mnist
-from filters import PCAFilterLayer
-from models import fc100_100_10, pcafiltered_fc, train, load
-from attacks import fastgradientsign, adversarial_score
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from tools.datasets import mnist
+from tools.filters import PCAFilterLayer
+from tools.models import fc100_100_10, pcafiltered_fc, train, load
+from tools.attacks import fastgradientsign, adversarial_score
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 

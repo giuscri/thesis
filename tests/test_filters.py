@@ -1,7 +1,6 @@
-from .context import filters, datasets
-
-from filters import PCAFilterLayer
-from datasets import mnist
+from .context import tools
+from tools.filters import PCAFilterLayer
+from tools.datasets import mnist
 
 import tensorflow as tf
 import numpy as np

@@ -1,5 +1,5 @@
-from .context import datasets
-from datasets import mnist
+from .context import tools
+from tools.datasets import mnist
 
 def test_mnist():
     X_train, y_train, X_test, y_test = mnist()

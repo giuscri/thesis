@@ -1,7 +1,7 @@
-from .context import models
-from models import fc100_100_10, pcafiltered_fc, train, evaluate
-from datasets import mnist
-from filters import PCAFilterLayer
+from .context import tools
+from tools.models import fc100_100_10, pcafiltered_fc, train, evaluate
+from tools.datasets import mnist
+from tools.filters import PCAFilterLayer
 
 MNIST = mnist()
 

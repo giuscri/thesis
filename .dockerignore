@@ -1,7 +1,0 @@
-model/
-.pytest_cache
-.coverage
-__pycache__
-tests/__pycache__
-*.png
-*.json

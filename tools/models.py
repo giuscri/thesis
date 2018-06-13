@@ -4,7 +4,7 @@ from binascii import hexlify
 import keras
 
 import numpy as np
-from filters import PCAFilterLayer
+from .filters import PCAFilterLayer
 
 def save(network, filename):
     directory = '/'.join(filename.split('/')[:-1])
