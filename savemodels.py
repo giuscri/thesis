@@ -15,6 +15,7 @@ help = {
     '-van': 'save trained vanilla network',
     '-retpca': 'save trained pca filtered network with retrain defense',
     '-recpca': 'save trained pca filtered network with reconstruction defense',
+    '-tensorboard': 'save data for tensorboard consumption'
 }
 
 argumentparser.add_argument('-ow', action='store_true', help=help['-ow'])
@@ -23,6 +24,7 @@ argumentparser.add_argument('-van', action='store_true', help=help['-van'])
 argumentparser.add_argument('-ep', type=int, help=help['-ep'], metavar='epochs')
 argumentparser.add_argument('-retpca', nargs='+', type=int, help=help['-retpca'], metavar='n_components')
 argumentparser.add_argument('-recpca', nargs='+', type=int, help=help['-recpca'], metavar='n_components')
+argumentparser.add_argument('-tensorboard', action='store_true', help=help['-tensorboard'])
 arguments = argumentparser.parse_args()
 
 default = arguments.default
@@ -33,12 +35,14 @@ if default:
     recpca = [784, 331, 100, 80, 60, 40, 20]
     overwrite = True
     epochs = 500
+    tensorboard = True
 else:
     vanilla = arguments.van
     retpca = arguments.retpca or []
     recpca = arguments.recpca or []
     overwrite = arguments.ow
     epochs = arguments.ep if arguments.ep is not None else 500
+    tensorboard = arguments.tensorboard
 
 if vanilla:
     filename = 'model/vanilla.h5'
@@ -67,12 +71,12 @@ X_train, y_train, X_test, y_test = mnist()
 if vanilla:
     filename = 'model/vanilla.h5'
     network = fc100_100_10()
-    train(network, X_train, y_train, epochs=epochs, verbose=True)
+    train(network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard)
     save(network, filename=filename)
 
 if recpca:
     network = fc100_100_10()
-    train(network, X_train, y_train, epochs=epochs, verbose=True)
+    train(network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard)
 
 for n_components in recpca:
     filtered_network = pcafiltered_fc(network, X_train, n_components)
@@ -82,6 +86,6 @@ for n_components in recpca:
 for n_components in retpca:
     network = fc100_100_10()
     filtered_network = pcafiltered_fc(network, X_train, n_components)
-    train(filtered_network, X_train, y_train, epochs=epochs, verbose=True)
+    train(filtered_network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard)
     filename = f'model/pca/retrain/{n_components}.h5'
     save(filtered_network, filename=filename)

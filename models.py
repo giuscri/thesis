@@ -66,12 +66,20 @@ def pcafiltered_fc(network, X_train, n_components=None):
     PCAFILTEREDFCCACHE[(network, n_components)] = filtered_network
     return filtered_network
 
-def train(network, X_train, y_train, epochs=500, batch_size=500, store=False, verbose=False):
+def train(network, X_train, y_train, epochs=500, tensorboard=False, store=False, verbose=False):
     """Train and save model"""
+    kerasverbose = 1 if verbose else 0
     num_classes = len(np.unique(y_train))
     onehot_y_train = keras.utils.to_categorical(y_train, num_classes=num_classes)
 
-    network.fit(X_train, onehot_y_train, epochs=epochs, batch_size=batch_size, verbose=1 if verbose else 0)
+    callbacks = []
+
+    if tensorboard:
+        randomsuffix = hexlify(os.urandom(32)[:10]).decode()
+        log_dir = f'tensorboardlogs/{network.name}/{randomsuffix}'
+        callbacks.append(keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=0))
+
+    network.fit(X_train, onehot_y_train, epochs=epochs, batch_size=500, verbose=kerasverbose, callbacks=callbacks)
     if store: save(network)
     return network
 
