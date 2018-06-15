@@ -7,6 +7,8 @@ from tools.models import train, evaluate, save, fc100_100_10, pcafiltered_fc
 
 from argparse import ArgumentParser
 
+PREFIX = os.environ.get('PREFIX', '.')
+
 argumentparser = ArgumentParser()
 
 help = {
@@ -17,7 +19,6 @@ help = {
     '-retpca': 'save trained pca filtered network with retrain defense',
     '-recpca': 'save trained pca filtered network with reconstruction defense',
     '-tensorboard': 'save data for tensorboard consumption',
-    '-prefix': 'prefix for where to store data',
 }
 
 argumentparser.add_argument('-ow', action='store_true', help=help['-ow'])
@@ -27,7 +28,6 @@ argumentparser.add_argument('-ep', type=int, help=help['-ep'], metavar='epochs')
 argumentparser.add_argument('-retpca', nargs='+', type=int, help=help['-retpca'], metavar='n_components')
 argumentparser.add_argument('-recpca', nargs='+', type=int, help=help['-recpca'], metavar='n_components')
 argumentparser.add_argument('-tensorboard', action='store_true', help=help['-tensorboard'])
-argumentparser.add_argument('-prefix', help=help['-prefix'])
 arguments = argumentparser.parse_args()
 
 default = arguments.default
@@ -39,7 +39,6 @@ if default:
     overwrite = True
     epochs = 500
     tensorboard = True
-    prefix = '.'
 else:
     vanilla = arguments.van
     retpca = arguments.retpca or []
@@ -47,22 +46,21 @@ else:
     overwrite = arguments.ow
     epochs = arguments.ep if arguments.ep is not None else 500
     tensorboard = arguments.tensorboard
-    prefix = arguments.prefix or '.'
 
 if vanilla:
-    filename = f'{prefix}/model/vanilla.h5'
+    filename = f'{PREFIX}/model/vanilla.h5'
     if os.path.exists(filename) and not overwrite:
         print(f'{filename} already exists. Use -ow if you really want to overwrite it.')
         sys.exit(-1)
 
 for n_components in retpca:
-    filename = f'{prefix}/model/retrain/pca/{n_components}.h5'
+    filename = f'{PREFIX}/model/retrain/pca/{n_components}.h5'
     if os.path.exists(filename) and not overwrite:
         print(f'{filename} already exists. Use -ow if you really want to overwrite it.')
         sys.exit(-1)
 
 for n_components in recpca:
-    filename = f'{prefix}/model/reconstruction/pca/{n_components}.h5'
+    filename = f'{PREFIX}/model/reconstruction/pca/{n_components}.h5'
     if os.path.exists(filename) and not overwrite:
         print(f'{filename} already exists. Use -ow if you really want to overwrite it.')
         sys.exit(-1)
@@ -74,23 +72,23 @@ if not vanilla and not retpca and not recpca:
 X_train, y_train, X_test, y_test = mnist()
 
 if vanilla:
-    filename = f'{prefix}/model/vanilla.h5'
+    filename = f'{PREFIX}/model/vanilla.h5'
     network = fc100_100_10()
-    train(network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard)
+    train(network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard, prefix=PREFIX)
     save(network, filename=filename)
 
 if recpca:
     network = fc100_100_10()
-    train(network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard)
+    train(network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard, prefix=PREFIX)
 
 for n_components in recpca:
     filtered_network = pcafiltered_fc(network, X_train, n_components)
-    filename = f'{prefix}/model/pca/reconstruction/{n_components}.h5'
+    filename = f'{PREFIX}/model/pca/reconstruction/{n_components}.h5'
     save(filtered_network, filename=filename)
 
 for n_components in retpca:
     network = fc100_100_10()
     filtered_network = pcafiltered_fc(network, X_train, n_components)
-    train(filtered_network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard)
-    filename = f'{prefix}/model/pca/retrain/{n_components}.h5'
+    train(filtered_network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard, prefix=PREFIX)
+    filename = f'{PREFIX}/model/pca/retrain/{n_components}.h5'
     save(filtered_network, filename=filename)
