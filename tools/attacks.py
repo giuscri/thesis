@@ -1,53 +1,52 @@
 import tensorflow as tf
 
-import cleverhans.attacks
-import cleverhans.utils_keras
+from cleverhans.attacks import FastGradientMethod
+from cleverhans.utils_keras import KerasModelWrapper
 
-import keras
+from keras.utils import to_categorical
+import keras.backend as K
 
 import numpy as np
 
-from .models import correctly_classified
+from .models import filter_correctly_classified_examples
 
-FGSCACHE = {} # cache of tf symbolic variables indexed by (withtarget, network, X.shape[1:])
+FAST_GRADIENT_SIGN_CACHE = {} # cache of tf symbolic variables indexed by tuple (with_target, model, input_shape)
 
-def fastgradientsign(network, X, y_target=None, eta=0.15):
-    """Generate adversarial examples from X to y using FGS."""
+def fast_gradient_sign(model, X, y_target=None, eta=0.15):
     assert y_target is None or len(y_target) == len(X)
-    withtarget = y_target is not None
+    with_target = y_target is not None
 
-    if withtarget:
-        num_classes = network.output.shape.as_list()[-1]
-        onehot_y_target = keras.utils.to_categorical(y_target, num_classes=num_classes)
+    if with_target:
+        num_classes = model.output.shape.as_list()[-1]
+        one_hot_y_target = to_categorical(y_target, num_classes=num_classes)
 
-    elementshape = X.shape[1:]
-    cached = FGSCACHE.get((withtarget, network, elementshape))
+    input_shape = X.shape[1:]
+    cached = FAST_GRADIENT_SIGN_CACHE.get((with_target, model, input_shape))
     if cached:
-        Xsym, onehot_y_targetsym, examplesym, etasym = cached
+        X_sym, one_hot_y_target_sym, example_sym, eta_sym = cached
     else:
-        cleverhans_network = cleverhans.utils_keras.KerasModelWrapper(network)
-        attack = cleverhans.attacks.FastGradientMethod(cleverhans_network)
+        cleverhans_model = KerasModelWrapper(model)
+        attack = FastGradientMethod(cleverhans_model)
 
-        Xsym = tf.placeholder(tf.float32, shape=network.input.shape)
-        etasym = tf.placeholder(tf.float32)
-        onehot_y_targetsym = None
-        if withtarget: onehot_y_targetsym = tf.placeholder(tf.float32, shape=network.output.shape)
+        X_sym = tf.placeholder(tf.float32, shape=model.input.shape)
+        eta_sym = tf.placeholder(tf.float32)
+        one_hot_y_target_sym = None
+        if with_target: one_hot_y_target_sym = tf.placeholder(tf.float32, shape=model.output.shape)
 
-        kwargs = { 'eps': etasym, 'ord': np.inf, 'clip_min': 0., 'clip_max': 1.}
-        if withtarget: kwargs['y_target'] = onehot_y_targetsym
-        examplesym = attack.generate(Xsym, **kwargs)
+        kwargs = {'eps': eta_sym, 'ord': np.inf, 'clip_min': 0., 'clip_max': 1.}
+        if with_target: kwargs['y_target'] = one_hot_y_target_sym
+        example_sym = attack.generate(X_sym, **kwargs)
 
-        FGSCACHE[(withtarget, network, elementshape)] = (Xsym, onehot_y_targetsym, examplesym, etasym)
+        FAST_GRADIENT_SIGN_CACHE[(with_target, model, input_shape)] = (X_sym, one_hot_y_target_sym, example_sym, eta_sym)
 
-    session = keras.backend.get_session()
-    feed_dict = { Xsym: X, etasym: eta }
-    if withtarget: feed_dict[onehot_y_targetsym] = onehot_y_target
+    session = K.get_session()
+    feed_dict = {X_sym: X, eta_sym: eta}
+    if with_target: feed_dict[one_hot_y_target_sym] = one_hot_y_target
 
-    return session.run(examplesym, feed_dict=feed_dict)
+    return session.run(example_sym, feed_dict=feed_dict)
 
-def adversarial_score(network, X_test, y_test, attack):
-    """Compute adversarial score with `attack(network, X)`."""
-    X, y = correctly_classified(network, X_test, y_test)
-    adversarialX = attack(network, X)
-    score = 1 - len(correctly_classified(network, adversarialX, y)[0]) / len(X)
+def fgs_adversarial_score(model, X_test, y_test, eta=None, y_target=None):
+    X, y = filter_correctly_classified_examples(model, X_test, y_test)
+    adversarialX = fast_gradient_sign(model, X, y_target, eta)
+    score = 1 - len(filter_correctly_classified_examples(model, adversarialX, y)[0]) / len(X)
     return score

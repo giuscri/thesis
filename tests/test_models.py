@@ -1,74 +1,81 @@
 from .context import tools
-from tools.models import fc100_100_10, pcafiltered_fc, train, evaluate
+from tools.models import fc_100_100_10, pca_filtered_model, train, accuracy
 from tools.datasets import mnist
-from tools.filters import PCAFilterLayer
 
 import os, shutil
 
 MNIST = mnist()
 
-def test_fc100_100_10():
-    network = fc100_100_10()
+def test_fc_100_100_10_structure():
+    model = fc_100_100_10()
     X_train, y_train, X_test, y_test = MNIST
 
-    assert len(network.inputs) == 1
-    assert network.inputs[0].shape.as_list() == [None, 28, 28]
+    assert len(model.inputs) == 1
+    assert model.inputs[0].shape.as_list() == [None, 28, 28]
 
-    assert len(network.outputs) == 1
-    assert network.outputs[0].shape.as_list() == [None, 10]
+    assert len(model.outputs) == 1
+    assert model.outputs[0].shape.as_list() == [None, 10]
 
-    assert len(network.layers) == 7
+    assert len(model.layers) == 7
 
-    train(network, X_train, y_train, epochs=10, store=False)
-    _, accuracy = evaluate(network, X_test, y_test)
-    assert 0.85 < accuracy < 0.90
-
-def test_filtered_fc_pca784():
-    X_train, y_train, X_test, y_test = MNIST
-    network = pcafiltered_fc(fc100_100_10(), X_train)
-
-    assert len(network.inputs) == 1
-    assert network.input.shape.as_list() == [None, 28, 28]
-
-    assert len(network.outputs) == 1
-    assert network.output.shape.as_list() == [None, 10]
-
-    assert len(network.layers) == 8
-
-    train(network, X_train, y_train, epochs=10, store=False)
-    _, accuracy = evaluate(network, X_test, y_test)
-    assert 0.85 < accuracy < 0.90
-
-def test_filtered_fc_pca10():
-    X_train, y_train, X_test, y_test = MNIST
-    network = pcafiltered_fc(fc100_100_10(), X_train, 10)
-
-    assert len(network.inputs) == 1
-    assert network.input.shape.as_list() == [None, 28, 28]
-
-    assert len(network.outputs) == 1
-    assert network.output.shape.as_list() == [None, 10]
-
-    assert len(network.layers) == 8
-
-    train(network, X_train, y_train, epochs=10, store=False)
-    _, accuracy = evaluate(network, X_test, y_test)
-    assert 0.75 < accuracy < 0.80
-
-def test_cached_fc_pca10():
-    X_train, y_train, X_test, y_test = MNIST
-    vanilla_network = fc100_100_10()
-    network = pcafiltered_fc(vanilla_network, X_train, 10)
-    assert network is pcafiltered_fc(vanilla_network, X_train, 10)
-
-def test_tensorboard():
-    network = fc100_100_10()
+def test_fc_100_100_10_accuracy():
+    model = fc_100_100_10()
     X_train, y_train, X_test, y_test = MNIST
 
-    train(network, X_train, y_train, epochs=10, store=False, tensorboard=True, prefix='/tmp')
-    _, accuracy = evaluate(network, X_test, y_test)
-    assert 0.85 < accuracy < 0.90
+    train(model, X_train, y_train, epochs=10)
+    assert 0.85 < accuracy(model, X_test, y_test) < 0.90
 
-    dirname = '/tmp/tensorboardlogs/fc100-100-10/'
+def test_pca_filtered_keeping_784_components_structure():
+    X_train, y_train, X_test, y_test = MNIST
+    model = pca_filtered_model(fc_100_100_10(), X_train)
+
+    assert len(model.inputs) == 1
+    assert model.input.shape.as_list() == [None, 28, 28]
+
+    assert len(model.outputs) == 1
+    assert model.output.shape.as_list() == [None, 10]
+
+    assert len(model.layers) == 8
+
+def test_pca_filtered_keeping_784_components_accuracy():
+    X_train, y_train, X_test, y_test = MNIST
+    model = pca_filtered_model(fc_100_100_10(), X_train)
+
+    train(model, X_train, y_train, epochs=10)
+    assert 0.85 < accuracy(model, X_test, y_test) < 0.90
+
+def test_pca_filtered_keeping_10_components_structure():
+    X_train, y_train, X_test, y_test = MNIST
+    model = pca_filtered_model(fc_100_100_10(), X_train, 10)
+
+    assert len(model.inputs) == 1
+    assert model.input.shape.as_list() == [None, 28, 28]
+
+    assert len(model.outputs) == 1
+    assert model.output.shape.as_list() == [None, 10]
+
+    assert len(model.layers) == 8
+
+def test_pca_filtered_keeping_10_components_accuracy():
+    X_train, y_train, X_test, y_test = MNIST
+    model = pca_filtered_model(fc_100_100_10(), X_train, 10)
+
+    train(model, X_train, y_train, epochs=10)
+    assert 0.75 < accuracy(model, X_test, y_test) < 0.80
+
+def test_pca_filtered_keeping_10_components_is_cached():
+    X_train, y_train, X_test, y_test = MNIST
+    vanilla_model = fc_100_100_10()
+    model = pca_filtered_model(vanilla_model, X_train, 10)
+    assert model is pca_filtered_model(vanilla_model, X_train, 10)
+
+def test_tensorboard_events_files_are_created():
+    model = fc_100_100_10()
+    X_train, y_train, X_test, y_test = MNIST
+
+    train(model, X_train, y_train, epochs=10, tensorboard=True, prefix='/tmp')
+    assert 0.85 < accuracy(model, X_test, y_test) < 0.90
+
+    dirname = '/tmp/tensorboardlogs/fc-100-100-10/'
     os.path.exists(dirname)
     shutil.rmtree(dirname)

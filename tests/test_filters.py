@@ -1,5 +1,5 @@
 from .context import tools
-from tools.filters import PCAFilterLayer
+from tools.layers import PCA
 from tools.datasets import mnist
 
 import tensorflow as tf
@@ -8,7 +8,7 @@ import sklearn.decomposition
 
 MNIST = mnist()
 
-def test_pcafilter_784components():
+def test_pca_implementation_is_equivalent_to_sklearn_when_keeping_784_components():
     X_train, _, _, _ = MNIST
     flatX_train = X_train.reshape(-1, 784)
 
@@ -18,14 +18,14 @@ def test_pcafilter_784components():
     filteredimage = sklearnfilter.inverse_transform(sklearnfilter.transform(flatimage))
     expected = filteredimage.reshape(-1, 28, 28)
 
-    actualfilter = PCAFilterLayer(X_train)
+    actualfilter = PCA(X_train)
     flatimage_sym = tf.placeholder(tf.float32)
     with tf.Session() as session:
         actual = session.run(actualfilter(flatimage_sym), feed_dict={flatimage_sym: flatimage})
 
     assert np.allclose(actual, expected, atol=0.001)
 
-def test_pcafilter_100components():
+def test_pca_implementation_is_equivalent_to_sklearn_when_keeping_100_components():
     X_train, _, _, _ = MNIST
     flatX_train = X_train.reshape(-1, 784)
 
@@ -35,7 +35,7 @@ def test_pcafilter_100components():
     filteredimage = sklearnfilter.inverse_transform(sklearnfilter.transform(flatimage))
     expected = filteredimage.reshape(-1, 28, 28)
 
-    actualfilter = PCAFilterLayer(X_train, 100)
+    actualfilter = PCA(X_train, 100)
     flatimage_sym = tf.placeholder(tf.float32)
     with tf.Session() as session:
         actual = session.run(actualfilter(flatimage_sym), feed_dict={flatimage_sym: flatimage})

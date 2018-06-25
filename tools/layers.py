@@ -1,8 +1,8 @@
 import tensorflow as tf
 import numpy as np
-import keras.engine.topology
+from keras.engine.topology import Layer
 
-class PCAFilterLayer(keras.engine.topology.Layer):
+class PCA(Layer):
     def __init__(self, X_train=None, n_components=None, mean=None, tv=None, elementshape=None, **kwargs):
         if X_train is not None: # Layer must be _trained_ before!
             assert X_train.dtype == np.float32
@@ -21,10 +21,10 @@ class PCAFilterLayer(keras.engine.topology.Layer):
         self.mean = mean
         self.tv = tv
         self.elementshape = elementshape
-        super(PCAFilterLayer, self).__init__(**kwargs)
+        super(PCA, self).__init__(**kwargs)
 
     def build(self, input_shape):
-        super(PCAFilterLayer, self).build(input_shape)
+        super(PCA, self).build(input_shape)
 
     def call(self, X):
         pxs_per_element = np.prod(self.elementshape)
@@ -40,7 +40,7 @@ class PCAFilterLayer(keras.engine.topology.Layer):
             'mean': self.mean,
             'tv': self.tv,
         }
-        base_config = super(PCAFilterLayer, self).get_config()
+        base_config = super(PCA, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
     @classmethod

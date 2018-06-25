@@ -3,7 +3,7 @@
 import os, sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from tools.datasets import mnist
-from tools.models import train, evaluate, save, fc100_100_10, pcafiltered_fc
+from tools.models import train, accuracy, save_to_file, fc_100_100_10, pca_filtered_model
 
 from argparse import ArgumentParser
 
@@ -51,44 +51,44 @@ if vanilla:
     filename = f'{PREFIX}/model/vanilla.h5'
     if os.path.exists(filename) and not overwrite:
         print(f'{filename} already exists. Use -ow if you really want to overwrite it.')
-        sys.exit(-1)
+        sys.exit(1)
 
 for n_components in retpca:
     filename = f'{PREFIX}/model/retrain/pca/{n_components}.h5'
     if os.path.exists(filename) and not overwrite:
         print(f'{filename} already exists. Use -ow if you really want to overwrite it.')
-        sys.exit(-1)
+        sys.exit(1)
 
 for n_components in recpca:
     filename = f'{PREFIX}/model/reconstruction/pca/{n_components}.h5'
     if os.path.exists(filename) and not overwrite:
         print(f'{filename} already exists. Use -ow if you really want to overwrite it.')
-        sys.exit(-1)
+        sys.exit(1)
 
 if not vanilla and not retpca and not recpca:
     print('At least one network to save should be specified.')
-    sys.exit(-1)
+    sys.exit(1)
 
 X_train, y_train, X_test, y_test = mnist()
 
 if vanilla:
     filename = f'{PREFIX}/model/vanilla.h5'
-    network = fc100_100_10()
+    network = fc_100_100_10()
     train(network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard, prefix=PREFIX)
-    save(network, filename=filename)
+    save_to_file(network, filename=filename)
 
 if recpca:
-    network = fc100_100_10()
+    network = fc_100_100_10()
     train(network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard, prefix=PREFIX)
 
 for n_components in recpca:
-    filtered_network = pcafiltered_fc(network, X_train, n_components)
+    filtered_network = pca_filtered_model(network, X_train, n_components)
     filename = f'{PREFIX}/model/pca/reconstruction/{n_components}.h5'
-    save(filtered_network, filename=filename)
+    save_to_file(filtered_network, filename=filename)
 
 for n_components in retpca:
-    network = fc100_100_10()
-    filtered_network = pcafiltered_fc(network, X_train, n_components)
+    network = fc_100_100_10()
+    filtered_network = pca_filtered_model(network, X_train, n_components)
     train(filtered_network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard, prefix=PREFIX)
     filename = f'{PREFIX}/model/pca/retrain/{n_components}.h5'
-    save(filtered_network, filename=filename)
+    save_to_file(filtered_network, filename=filename)

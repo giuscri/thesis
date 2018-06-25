@@ -1,7 +1,7 @@
 from .context import tools
 from tools.datasets import mnist
 
-def test_mnist():
+def test_parsed_mnist_has_expected_shape():
     X_train, y_train, X_test, y_test = mnist()
 
     assert len(X_train) == 60000

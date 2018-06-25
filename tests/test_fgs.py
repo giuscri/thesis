@@ -4,9 +4,10 @@ from tools import models
 import subprocess, json, os, pytest, shutil
 import numpy as np
 
-def test_recons():
-    command = 'python bin/fgs.py -mods tests/model/pca/reconstruction/784.h5 tests/model/pca/reconstruction/100.h5 -etas 0.05 0.1 0.2'
-    process = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
+def test_fgs_adversarial_score_when_using_reconstruction_defense():
+    command = ['python', 'bin/fgs.py', '-mods', 'tests/model/pca/reconstruction/784.h5', 'tests/model/pca/reconstruction/100.h5', '-etas', '0.05', '0.1', '0.2']
+    process = subprocess.run(command, stdout=subprocess.PIPE)
+    assert process.returncode == 0
     shutil.rmtree('fgs/')
     result = json.loads(process.stdout.decode())
 
@@ -22,9 +23,10 @@ def test_recons():
     actual = np.array([scoredict['0.05'], scoredict['0.1'], scoredict['0.2']])
     assert np.allclose(actual, expected, atol=5)
 
-def test_retrain():
-    command = 'python bin/fgs.py -mods tests/model/pca/retrain/784.h5 tests/model/pca/retrain/100.h5 -etas 0.05 0.1 0.2'
-    process = subprocess.run(command, shell=True, stdout=subprocess.PIPE)
+def test_fgs_adversarial_score_when_using_retrain_defense():
+    command = ['python', 'bin/fgs.py', '-mods', 'tests/model/pca/retrain/784.h5', 'tests/model/pca/retrain/100.h5', '-etas', '0.05', '0.1', '0.2']
+    process = subprocess.run(command, stdout=subprocess.PIPE)
+    assert process.returncode == 0
     shutil.rmtree('fgs/')
     result = json.loads(process.stdout)
 
@@ -41,8 +43,10 @@ def test_retrain():
     assert np.allclose(actual, expected, atol=5)
 
 @pytest.mark.skipif('DISPLAY' in os.environ, reason='blocks test suite inside X')
-def test_save():
+def test_plot_is_saved():
     command = 'python bin/fgs.py -mods tests/model/pca/reconstruction/784.h5 -etas 0.05 -plot'
-    process = subprocess.run(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
+    command = ['python', 'bin/fgs.py', '-mods', 'tests/model/pca/reconstruction/784.h5', '-etas', '0.05', '-plot']
+    process = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
+    assert process.returncode == 1
 
     assert 'DISPLAY' in os.environ or b'no $DISPLAY environment variable' in process.stderr # check fgs.py will try to call plt.show()
