@@ -9,3 +9,8 @@ def freeze_random_state():
     K.clear_session()
     tf.set_random_seed(1234)
     np.random.seed(1234)
+
+@pytest.fixture
+def mnist():
+    import tools.datasets
+    return tools.datasets.mnist()
