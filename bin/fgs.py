@@ -10,6 +10,8 @@ from tools.datasets import mnist
 from tools.models import fc_100_100_10, pca_filtered_model, train, load_from_file
 from tools.attacks import fast_gradient_sign, fgs_adversarial_score
 
+PREFIX = os.environ.get('PREFIX', '.')
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 parser = argparse.ArgumentParser()
@@ -55,7 +57,7 @@ print(json.dumps(result))
 
 for identifier in IDENTIFIERS:
     fname = identifier.split('-')[-1] + '.json'
-    path = 'fgs/' + '/'.join(identifier.split('-')[:-1])
+    path = f'{PREFIX}/fgs/' + '/'.join(identifier.split('-')[:-1])
     os.makedirs(path, exist_ok=True)
     with open('/'.join([path, fname]), 'w') as f: json.dump(result[identifier], f)
 
@@ -78,6 +80,6 @@ if plot:
         plt.plot(x, y, 'o', label=identifier)
 
     plt.legend()
-    os.makedirs('fgs/', exist_ok=True)
-    plt.savefig(f'fgs/{hexlify(os.urandom(32)[:10]).decode()}.png')
+    os.makedirs(f'{PREFIX}/fgs/', exist_ok=True)
+    plt.savefig(f'{PREFIX}/fgs/{hexlify(os.urandom(32)[:10]).decode()}.png')
     plt.show()
