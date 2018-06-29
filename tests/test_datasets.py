@@ -1,5 +1,6 @@
 from .context import tools
 from tools.datasets import mnist
+import pytest
 
 def test_parsed_mnist_has_expected_shape():
     X_train, y_train, X_test, y_test = mnist()
@@ -15,3 +16,8 @@ def test_parsed_mnist_has_expected_shape():
 
     assert X_test.shape == (10000, 28, 28)
     assert y_test.shape == (10000,)
+
+def test_parsed_mnist_is_not_writeable():
+    X_train, y_train, X_test, y_test = mnist()
+    with pytest.raises(ValueError):
+        X_train[:100] = X_test[:100]

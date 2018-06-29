@@ -55,4 +55,10 @@ def mnist():
     X_test = pixels.values.reshape(-1, 28, 28) / 255
     y_test = label.values
 
+    X_train.flags.writeable = False
+    y_train.flags.writeable = False
+
+    X_test.flags.writeable = False
+    y_test.flags.writeable = False
+
     return X_train, y_train, X_test, y_test
