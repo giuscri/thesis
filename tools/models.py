@@ -1,6 +1,8 @@
 from os import makedirs, urandom
 from os.path import exists
 from binascii import hexlify
+from functools import lru_cache
+from pickle import loads, dumps
 
 from keras.models import Sequential, load_model
 from keras.layers import Flatten, Dense, Activation
@@ -44,12 +46,9 @@ def fc_100_100_10():
 
     return model
 
-PCA_FILTERED_MODEL_CACHE = {}
-
-def pca_filtered_model(model, X_train, n_components=None):
-    if (model, n_components) in PCA_FILTERED_MODEL_CACHE:
-        return PCA_FILTERED_MODEL_CACHE[(model, n_components)]
-
+@lru_cache()
+def __cached_pca_filtered_model(model, serializedX_train, n_components=None):
+    X_train = loads(serializedX_train)
     batch_input_shape = model.input.shape.as_list()
     layers = []
     layers.append(PCA(X_train, n_components, batch_input_shape=batch_input_shape))
@@ -67,9 +66,12 @@ def pca_filtered_model(model, X_train, n_components=None):
     for wrapped_layer, layer in zip(model.layers, filtered_model.layers[1:]):
         layer.set_weights(wrapped_layer.get_weights())
 
-    PCA_FILTERED_MODEL_CACHE[(model, n_components)] = filtered_model
     filtered_model.name = "pca-filtered-model-{n_components}-components"
     return filtered_model
+
+def pca_filtered_model(model, X_train, n_components=None):
+    serializedX_train = dumps(X_train)
+    return __cached_pca_filtered_model(model, serializedX_train, n_components)
 
 def train(model, X_train, y_train, epochs=500, early_stopping=True, tensorboard=False, verbose=False, prefix='.'):
     _verbose = 1 if verbose else 0
