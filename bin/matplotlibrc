@@ -1,6 +1,0 @@
-backend: TkAgg
-
-text.usetex: True
-font.family: serif
-
-axes.titlepad: 12

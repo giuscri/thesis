@@ -27,6 +27,6 @@ make pytest
 
 ## How to run
 ```
-pipenv run ./princeton.py --help
+pipenv run ./bin/save_models --help
 ```
 
