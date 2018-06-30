@@ -2,9 +2,11 @@
 
 import numpy as np
 
-import itertools, argparse, json, sys, logging, os
+import itertools, argparse, json, logging, os
 from binascii import hexlify
+from re import findall
 
+import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from tools.datasets import mnist
 from tools.models import fc_100_100_10, pca_filtered_model, train, load_from_file
@@ -14,72 +16,71 @@ PREFIX = os.environ.get('PREFIX', '.')
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
-parser = argparse.ArgumentParser()
+argumentparser = argparse.ArgumentParser()
+argumentparser.add_argument('--plot', action='store_true')
+argumentparser.add_argument('--eta', nargs='+', type=float)
+argumentparser.add_argument('--model', nargs='+')
+arguments = argumentparser.parse_args()
 
-parser.add_argument('-plot', action='store_true')
-parser.add_argument('-etas', nargs='+', type=float, default=[0.05, 0.1, 0.15, 0.2, 0.25], help='parameters for FGS')
-parser.add_argument('-mods', nargs='+', help='HDF5 files to load models from')
-
-arguments = parser.parse_args()
-plot = arguments.plot
-mods = arguments.mods
-etas = arguments.etas
+PLOT = arguments.plot
+MODEL = arguments.model
+ETA = arguments.eta
 
 X_train, y_train, X_test, y_test = mnist()
 
-networkdict = {}
+model_dictionary = {}
 
-for modelname in mods:
-    name_without_extension = ''.join(modelname.split('.')[:-1])
-    identifier = '-'.join(name_without_extension.split('/')[1:])
-    networkdict[identifier] = load_from_file(modelname)
+for filename in MODEL:
+    model = load_from_file(filename)
+    if 'reconstruction' in filename:
+        model_identifier = f'reconstruction/{model.name}'
+    elif 'retraining' in filename:
+        model_identifier = f'retraining/{model.name}'
+    model_dictionary[model_identifier] = model
 
-def sortkey(identifier):
-    try:
-        return int(identifier.split('-')[-1])
-    except ValueError:
-        return np.inf
+def sort_key(model_identifier):
+    found = findall('pca-filtered-model-(\d+)-components', model_identifier)
+    if len(found) != 1: return np.inf
+    return int(found[0])
 
-IDENTIFIERS = list(networkdict.keys())
-IDENTIFIERS.sort(key=sortkey, reverse=True)
+model_dictionary_keys = list(model_dictionary.keys())
+model_dictionary_keys.sort(key=sort_key, reverse=True)
 
-result = {}
+score_dictionary = {}
 
-for identifier, eta in itertools.product(IDENTIFIERS, etas):
-    logging.info(f'computing score for combination: ({identifier}, {eta})')
-    network = networkdict[identifier]
-    score = int(100 * fgs_adversarial_score(network, X_test, y_test, eta))
-    inner_result = result.get(identifier, {})
-    inner_result[eta] = score
-    result[identifier] = inner_result
+for model_identifier, eta in itertools.product(model_dictionary_keys, ETA):
+    logging.info(f'computing score for combination: ({model_identifier}, {eta})')
+    model = model_dictionary[model_identifier]
+    adversarial_score = int(100 * fgs_adversarial_score(model, X_test, y_test, eta))
+    scores_for_model = score_dictionary.get(model_identifier, {})
+    scores_for_model[eta] = adversarial_score
+    score_dictionary[model_identifier] = scores_for_model
 
-print(json.dumps(result))
+print(json.dumps(score_dictionary))
 
-for identifier in IDENTIFIERS:
-    fname = identifier.split('-')[-1] + '.json'
-    path = f'{PREFIX}/fgs/' + '/'.join(identifier.split('-')[:-1])
-    os.makedirs(path, exist_ok=True)
-    with open('/'.join([path, fname]), 'w') as f: json.dump(result[identifier], f)
+for model_identifier in score_dictionary.keys():
+    directory = os.path.dirname(model_identifier)
+    os.makedirs('{PREFIX}/fast-gradient-sign/{directory}', exist_ok=True)
+    with open(f'{PREFIX}/fast-gradient-sign/{model_identifier}.json', 'w') as f:
+        json.dump(score_dictionary[model_identifier], f)
 
-if plot:
-    from matplotlib.figure import figaspect
+if PLOT:
     from matplotlib import pyplot as plt
 
-    plt.style.use('ggplot')
-    plt.figure(figsize=figaspect(1/2.5))
     plt.grid(linestyle='--')
     plt.xlabel('$\eta$')
     plt.ylabel('Adversarial success (\%)')
 
-    for identifier in IDENTIFIERS:
-        inner_result = result[identifier]
+    for model_identifier in score_dictionary.keys():
+        scores_for_model = score_dictionary[model_identifier]
         x, y = [], []
-        for eta in inner_result:
+        for eta in scores_for_model.keys():
             x.append(eta)
-            y.append(inner_result[eta])
-        plt.plot(x, y, 'o', label=identifier)
+            y.append(scores_for_model[eta])
+        plt.plot(x, y, 'o', label=model_identifier)
 
     plt.legend()
-    os.makedirs(f'{PREFIX}/fgs/', exist_ok=True)
-    plt.savefig(f'{PREFIX}/fgs/{hexlify(os.urandom(32)[:10]).decode()}.png')
+    os.makedirs(f'{PREFIX}/fast-gradient-sign/', exist_ok=True)
+    random_string = hexlify(os.urandom(32)[:10]).decode()
+    plt.savefig(f'{PREFIX}/fast-gradient-sign/{random_string}.png')
     plt.show()

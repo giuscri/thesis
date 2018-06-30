@@ -1,5 +1,5 @@
 from os import makedirs, urandom, environ
-from os.path import exists
+from os.path import exists, splitext, basename, dirname
 from binascii import hexlify
 from functools import lru_cache
 from pickle import loads, dumps
@@ -14,15 +14,17 @@ import numpy as np
 from .layers import PCA
 
 def save_to_file(model, filename):
-    directory = '/'.join(filename.split('/')[:-1])
+    directory = dirname(filename)
     makedirs(directory, exist_ok=True)
     model.save(filename)
     return model
 
 def load_from_file(filename):
-    return load_model(filename, custom_objects={
+    model = load_model(filename, custom_objects={
         'PCA': PCA,
     })
+    model.name, _ = splitext(basename(filename))
+    return model
 
 def fc_100_100_10():
     model = Sequential([
