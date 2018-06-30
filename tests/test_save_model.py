@@ -10,28 +10,23 @@ from numpy import allclose
 def teardown():
     shutil.rmtree('/tmp/model/', ignore_errors=True)
 
-def test_common_run(environ):
-    command = ['python', 'bin/save_model', '--epochs', '0', '--no-defense', '--reconstruction', '--retraining', '--pca', '784', '331', '100', '80', '60', '40', '20']
+def test_pca_when_reconstruction_is_saved(environ):
+    command = ['python', 'bin/save_model', '--reconstruction', '--epochs', '0', '--pca', '100', '20']
     process = subprocess.run(command, stdout=subprocess.PIPE)
     assert process.returncode == 0
     assert os.path.exists('/tmp/model/')
-    assert os.path.exists('/tmp/model/fc-100-100-10.h5')
-    assert os.path.exists('/tmp/model/retraining/pca-filtered-model-784-components.h5')
-    assert os.path.exists('/tmp/model/retraining/pca-filtered-model-331-components.h5')
-    assert os.path.exists('/tmp/model/retraining/pca-filtered-model-100-components.h5')
-    assert os.path.exists('/tmp/model/retraining/pca-filtered-model-80-components.h5')
-    assert os.path.exists('/tmp/model/retraining/pca-filtered-model-60-components.h5')
-    assert os.path.exists('/tmp/model/retraining/pca-filtered-model-40-components.h5')
-    assert os.path.exists('/tmp/model/retraining/pca-filtered-model-20-components.h5')
-    assert os.path.exists('/tmp/model/reconstruction/pca-filtered-model-784-components.h5')
-    assert os.path.exists('/tmp/model/reconstruction/pca-filtered-model-331-components.h5')
     assert os.path.exists('/tmp/model/reconstruction/pca-filtered-model-100-components.h5')
-    assert os.path.exists('/tmp/model/reconstruction/pca-filtered-model-80-components.h5')
-    assert os.path.exists('/tmp/model/reconstruction/pca-filtered-model-60-components.h5')
-    assert os.path.exists('/tmp/model/reconstruction/pca-filtered-model-40-components.h5')
     assert os.path.exists('/tmp/model/reconstruction/pca-filtered-model-20-components.h5')
 
-def test_vanilla_network_is_saved(environ):
+def test_pca_when_retraining_is_saved(environ):
+    command = ['python', 'bin/save_model', '--retraining', '--epochs', '0', '--pca', '100', '20']
+    process = subprocess.run(command, stdout=subprocess.PIPE)
+    assert process.returncode == 0
+    assert os.path.exists('/tmp/model/')
+    assert os.path.exists('/tmp/model/retraining/pca-filtered-model-100-components.h5')
+    assert os.path.exists('/tmp/model/retraining/pca-filtered-model-20-components.h5')
+
+def test_no_defense_network_is_saved(environ):
     command = ['python', 'bin/save_model', '--no-defense', '--epochs', '0']
     process = subprocess.run(command, stdout=subprocess.PIPE)
     assert process.returncode == 0
