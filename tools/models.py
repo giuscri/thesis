@@ -1,4 +1,4 @@
-from os import makedirs, urandom
+from os import makedirs, urandom, environ
 from os.path import exists
 from binascii import hexlify
 from functools import lru_cache
@@ -73,7 +73,7 @@ def pca_filtered_model(model, X_train, n_components=None):
     serializedX_train = dumps(X_train)
     return __cached_pca_filtered_model(model, serializedX_train, n_components)
 
-def train(model, X_train, y_train, epochs=500, early_stopping=True, tensorboard=False, verbose=False, prefix='.'):
+def train(model, X_train, y_train, epochs=500, early_stopping=True, tensorboard=True, verbose=True):
     _verbose = 1 if verbose else 0
     num_classes = len(np.unique(y_train))
     one_hot_y_train = to_categorical(y_train, num_classes=num_classes)
@@ -85,13 +85,14 @@ def train(model, X_train, y_train, epochs=500, early_stopping=True, tensorboard=
 
     if tensorboard:
         random_string = hexlify(urandom(32)[:10]).decode()
+        prefix = environ.get('PREFIX', '.')
         log_dir = f'{prefix}/tensorboardlogs/{model.name}/{random_string}'
         callbacks.append(TensorBoard(log_dir=log_dir, histogram_freq=0))
 
     model.fit(X_train, one_hot_y_train, epochs=epochs, batch_size=500, verbose=_verbose, callbacks=callbacks, validation_split=0.2)
     return model
 
-def accuracy(model, X_test, y_test, verbose=False):
+def accuracy(model, X_test, y_test, verbose=True):
     _verbose = 1 if verbose else 0
     num_classes = model.output.shape.as_list()[-1]
     one_hot_y_test = to_categorical(y_test, num_classes=num_classes)

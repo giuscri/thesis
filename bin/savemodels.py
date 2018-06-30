@@ -89,6 +89,6 @@ for n_components in recpca:
 for n_components in retpca:
     network = fc_100_100_10()
     filtered_network = pca_filtered_model(network, X_train, n_components)
-    train(filtered_network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard, prefix=PREFIX)
+    train(filtered_network, X_train, y_train, epochs=epochs, verbose=True, tensorboard=tensorboard)
     filename = f'{PREFIX}/model/pca/retrain/{n_components}.h5'
     save_to_file(filtered_network, filename=filename)

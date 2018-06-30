@@ -68,11 +68,11 @@ def test_pca_filtered_keeping_10_components_is_cached(mnist):
     model = pca_filtered_model(vanilla_model, X_train, 10)
     assert model is pca_filtered_model(vanilla_model, X_train, 10)
 
-def test_tensorboard_events_files_are_created(mnist):
+def test_tensorboard_events_files_are_created(mnist, environ):
     model = fc_100_100_10()
     X_train, y_train, X_test, y_test = mnist
 
-    train(model, X_train, y_train, epochs=2, tensorboard=True, prefix='/tmp')
+    train(model, X_train, y_train, epochs=2, tensorboard=True)
     assert isclose(accuracy(model, X_test, y_test), 0.54, abs_tol=0.01)
 
     dirname = '/tmp/tensorboardlogs/fc-100-100-10/'
