@@ -60,7 +60,7 @@ print(json.dumps(score_dictionary))
 
 for model_identifier in score_dictionary.keys():
     directory = os.path.dirname(model_identifier)
-    os.makedirs('{PREFIX}/fast-gradient-sign/{directory}', exist_ok=True)
+    os.makedirs(f'{PREFIX}/fast-gradient-sign/{directory}', exist_ok=True)
     with open(f'{PREFIX}/fast-gradient-sign/{model_identifier}.json', 'w') as f:
         json.dump(score_dictionary[model_identifier], f)
 
