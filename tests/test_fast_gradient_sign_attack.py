@@ -46,7 +46,7 @@ def test_fgs_adversarial_score_when_using_retrain_defense(environ):
 
 @pytest.mark.skipif('DISPLAY' in os.environ, reason='blocks test suite inside X')
 def test_plot_is_saved(environ):
-    command = ['python', 'bin/fast_gradient_sign_attack', '--model', 'tests/model/reconstruction/pca-filtered-model-784-components.h5', '--eta', '0.05', '-plot']
+    command = ['python', 'bin/fast_gradient_sign_attack', '--model', 'tests/model/reconstruction/pca-filtered-model-784-components.h5', '--eta', '0.05', '--plot']
     process = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
     assert process.returncode == 1
 
