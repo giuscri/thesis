@@ -6,7 +6,7 @@ import numpy as np
 
 @pytest.fixture(autouse=True)
 def teardown():
-    shutil.rmtree('/tmp/fgs', ignore_errors=True)
+    shutil.rmtree('/tmp/fast-gradient-sign', ignore_errors=True)
 
 def test_fgs_adversarial_score_when_using_reconstruction_defense(environ):
     command = ['python', 'bin/fast_gradient_sign_attack', '--model', 'tests/model/reconstruction/pca-filtered-model-784-components.h5', 'tests/model/reconstruction/pca-filtered-model-100-components.h5', '--eta', '0.05', '0.1', '0.2']
