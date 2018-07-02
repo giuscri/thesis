@@ -1,29 +1,22 @@
 #!/usr/bin/env python
 
 import os, sys
+import keras.backend as K
+import tensorflow as tf
+import numpy as np
+from argparse import ArgumentParser
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from datasets import mnist
 from models import train, accuracy, save_to_file, fc_100_100_10, pca_filtered_model
 
-import keras.backend as K
-import tensorflow as tf
-import numpy as np
-
-from argparse import ArgumentParser
-
 argumentparser = ArgumentParser()
-argumentparser.add_argument('--no-defense', action='store_true',
-                            help='save fully connected network without any defense')
-argumentparser.add_argument('--pca', type=int, nargs='+', default=[],
-                            help='specify number of components to keep when using PCA')
-argumentparser.add_argument('--epochs', type=int, required=True,
-                            help='number of epochs to train models for')
-argumentparser.add_argument('--retraining', action='store_true',
-                            help='use retraining defense when using filters')
-argumentparser.add_argument('--reconstruction', action='store_true',
-                            help='use retraining defense when using filters')
-argumentparser.add_argument('--random-state', type=int,
-                            help='random state to specify for reproducible trainings')
+argumentparser.add_argument('--no-defense', action='store_true', help='save fully connected network without any defense')
+argumentparser.add_argument('--pca', type=int, nargs='+', default=[], help='specify number of components to keep when using PCA')
+argumentparser.add_argument('--epochs', type=int, required=True, help='number of epochs to train models for')
+argumentparser.add_argument('--retraining', action='store_true', help='use retraining defense when using filters')
+argumentparser.add_argument('--reconstruction', action='store_true', help='use retraining defense when using filters')
+argumentparser.add_argument('--random-state', type=int, help='random state to specify for reproducible trainings')
 arguments = argumentparser.parse_args()
 
 NO_DEFENSE = arguments.no_defense

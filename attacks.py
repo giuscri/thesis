@@ -12,6 +12,7 @@ from pickle import loads, dumps
 
 from models import filter_correctly_classified_examples
 
+
 @lru_cache()
 def __fast_gradient_sign_tf_symbols(model, serializedX, serializedy_target):
     X = loads(serializedX)
@@ -27,9 +28,9 @@ def __fast_gradient_sign_tf_symbols(model, serializedX, serializedy_target):
     else:
         one_hot_y_target_sym = None
 
-    kwargs = {'eps': eta_sym, 'ord': np.inf, 'clip_min': 0., 'clip_max': 1.}
+    kwargs = {"eps": eta_sym, "ord": np.inf, "clip_min": 0., "clip_max": 1.}
     if y_target is not None:
-        kwargs['y_target'] = one_hot_y_target_sym
+        kwargs["y_target"] = one_hot_y_target_sym
 
     example_sym = attack.generate(X_sym, **kwargs)
     return X_sym, one_hot_y_target_sym, example_sym, eta_sym
@@ -49,12 +50,16 @@ def fast_gradient_sign(model, X, y_target=None, eta=0.15):
     X_sym, one_hot_y_target_sym, example_sym, eta_sym = symbols
     session = K.get_session()
     feed_dict = {X_sym: X, eta_sym: eta}
-    if with_target: feed_dict[one_hot_y_target_sym] = one_hot_y_target
+    if with_target:
+        feed_dict[one_hot_y_target_sym] = one_hot_y_target
 
     return session.run(example_sym, feed_dict=feed_dict)
+
 
 def fgs_adversarial_score(model, X_test, y_test, eta=None, y_target=None):
     X, y = filter_correctly_classified_examples(model, X_test, y_test)
     adversarialX = fast_gradient_sign(model, X, y_target, eta)
-    score = 1 - len(filter_correctly_classified_examples(model, adversarialX, y)[0]) / len(X)
+    score = 1 - len(
+        filter_correctly_classified_examples(model, adversarialX, y)[0]
+    ) / len(X)
     return score

@@ -1,33 +1,32 @@
 #!/usr/bin/env python
 
 import numpy as np
-
 import itertools, argparse, json, logging, os
 from binascii import hexlify
 from re import findall
-
+from matplotlib import pyplot as plt
 import sys
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from datasets import mnist
 from models import fc_100_100_10, pca_filtered_model, train, load_from_file
 from attacks import fast_gradient_sign, fgs_adversarial_score
 
-PREFIX = os.environ.get('PREFIX', '.')
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+log = logging.getLogger()
+formatter = logging.Formatter('%(asctime)s - %(message)s')
+log.setLevel('INFO')
+info = lambda message: log.info(message)
 
 argumentparser = argparse.ArgumentParser()
-argumentparser.add_argument('--plot', action='store_true',
-                            help='plot data')
-argumentparser.add_argument('--eta', nargs='+', type=float,
-                            help='values eta to try when generating adv/ examples')
-argumentparser.add_argument('--model', nargs='+',
-                            help='path to models to attack')
+argumentparser.add_argument('--plot', action='store_true', help='plot data')
+argumentparser.add_argument('--eta', nargs='+', type=float, help='values eta for generating adv/ examples')
+argumentparser.add_argument('--model', nargs='+', help='path to models to attack')
 arguments = argumentparser.parse_args()
 
 PLOT = arguments.plot
 MODEL = arguments.model
 ETA = arguments.eta
+PREFIX = os.environ.get('PREFIX', '.')
 
 X_train, y_train, X_test, y_test = mnist()
 
@@ -52,7 +51,7 @@ model_dictionary_keys.sort(key=sort_key, reverse=True)
 score_dictionary = {}
 
 for model_identifier, eta in itertools.product(model_dictionary_keys, ETA):
-    logging.info(f'computing score for combination: ({model_identifier}, {eta})')
+    info(f'computing score for combination: ({model_identifier}, {eta})')
     model = model_dictionary[model_identifier]
     adversarial_score = int(100 * fgs_adversarial_score(model, X_test, y_test, eta))
     scores_for_model = score_dictionary.get(model_identifier, {})
@@ -68,8 +67,6 @@ for model_identifier in score_dictionary.keys():
         json.dump(score_dictionary[model_identifier], f)
 
 if PLOT:
-    from matplotlib import pyplot as plt
-
     plt.grid(linestyle='--')
     plt.xlabel('$\eta$')
     plt.ylabel('Adversarial success (\%)')
