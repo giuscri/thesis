@@ -48,15 +48,13 @@ def sort_key(model_identifier):
 model_dictionary_keys = list(model_dictionary.keys())
 model_dictionary_keys.sort(key=sort_key, reverse=True)
 
-score_dictionary = {}
+score_dictionary = {k: {} for k in model_dictionary_keys}
 
 for model_identifier, eta in itertools.product(model_dictionary_keys, ETA):
     info(f'computing score for combination: ({model_identifier}, {eta})')
     model = model_dictionary[model_identifier]
     adversarial_score = int(100 * fgs_adversarial_score(model, X_test, y_test, eta))
-    scores_for_model = score_dictionary.get(model_identifier, {})
-    scores_for_model[eta] = adversarial_score
-    score_dictionary[model_identifier] = scores_for_model
+    score_dictionary[model_identifier].update({eta: adversarial_score})
 
 print(json.dumps(score_dictionary))
 
