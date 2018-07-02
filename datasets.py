@@ -3,10 +3,10 @@ from os.path import exists
 
 import logging
 
-log = logging.getLogger()
-log.setLevel("INFO")
-log.setFormatter("%(asctime)s %(message)s")
-info = lambda message: log.info(message)
+logging.basicConfig(format="%(asctime)s - %(message)s")
+logger = logging.getLogger()
+logger.setLevel("INFO")
+info = lambda message: logger.info(message)
 
 import pandas as pd
 

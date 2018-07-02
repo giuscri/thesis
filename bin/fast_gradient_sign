@@ -12,10 +12,10 @@ from datasets import mnist
 from models import fc_100_100_10, pca_filtered_model, train, load_from_file
 from attacks import fast_gradient_sign, fgs_adversarial_score
 
-log = logging.getLogger()
-formatter = logging.Formatter('%(asctime)s - %(message)s')
-log.setLevel('INFO')
-info = lambda message: log.info(message)
+logging.basicConfig(format='%(asctime)s - %(message)s')
+logger = logging.getLogger()
+logger.setLevel('INFO')
+info = lambda message: logger.info(message)
 
 argumentparser = argparse.ArgumentParser()
 argumentparser.add_argument('--plot', action='store_true', help='plot data')
