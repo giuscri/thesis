@@ -10,7 +10,7 @@ import numpy as np
 from functools import lru_cache
 from pickle import loads, dumps
 
-from .models import filter_correctly_classified_examples
+from models import filter_correctly_classified_examples
 
 @lru_cache()
 def __fast_gradient_sign_tf_symbols(model, serializedX, serializedy_target):

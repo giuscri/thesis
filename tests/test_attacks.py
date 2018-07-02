@@ -1,6 +1,7 @@
-from .context import tools
-from tools.attacks import fast_gradient_sign, fgs_adversarial_score, __fast_gradient_sign_tf_symbols
-from tools.models import fc_100_100_10, train, accuracy
+from .context import attacks
+from attacks import fast_gradient_sign, fgs_adversarial_score, __fast_gradient_sign_tf_symbols
+from .context import models
+from models import fc_100_100_10, train, accuracy
 
 import numpy as np
 from math import isclose

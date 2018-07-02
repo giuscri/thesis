@@ -1,6 +1,4 @@
-from .context import tools
-from tools import models
-from tools import layers
+from .context import layers
 import keras
 
 import subprocess, os, shutil, pytest

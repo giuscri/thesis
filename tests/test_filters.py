@@ -1,5 +1,5 @@
-from .context import tools
-from tools.layers import PCA
+from .context import layers
+from layers import PCA
 
 import tensorflow as tf
 import numpy as np

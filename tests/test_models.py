@@ -1,5 +1,5 @@
-from .context import tools
-from tools.models import fc_100_100_10, pca_filtered_model, train, accuracy
+from .context import models
+from models import fc_100_100_10, pca_filtered_model, train, accuracy
 
 import os, shutil
 from math import isclose

@@ -1,5 +1,5 @@
-from .context import tools
-from tools.datasets import mnist
+from .context import datasets
+from datasets import mnist
 import pytest
 
 def test_parsed_mnist_has_expected_shape():

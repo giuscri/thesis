@@ -11,7 +11,7 @@ from keras.callbacks import TensorBoard, EarlyStopping
 from keras.utils import to_categorical
 
 import numpy as np
-from .layers import PCA
+from layers import PCA
 
 def save_to_file(model, filename):
     directory = dirname(filename)

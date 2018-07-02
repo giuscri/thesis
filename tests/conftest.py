@@ -2,7 +2,6 @@ import pytest
 import tensorflow as tf
 import numpy as np
 import keras.backend as K
-import tools
 import os
 
 @pytest.fixture(autouse=True)
@@ -21,5 +20,5 @@ def environ():
 
 @pytest.fixture
 def mnist():
-    import tools.datasets
-    return tools.datasets.mnist()
+    from .context import datasets
+    return datasets.mnist()
