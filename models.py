@@ -58,7 +58,7 @@ def __cached_pca_filtered_model(model, serializedX_train, n_components=None):
     for wrapped_layer, layer in zip(model.layers, filtered_model.layers[1:]):
         layer.set_weights(wrapped_layer.get_weights())
 
-    filtered_model.name = "pca-filtered-model-{n_components}-components"
+    filtered_model.name = f"pca-filtered-model-{n_components}-components"
     return filtered_model
 
 def pca_filtered_model(model, X_train, n_components=None):
