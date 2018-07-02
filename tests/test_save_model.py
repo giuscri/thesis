@@ -48,4 +48,4 @@ def test_models_with_same_random_state_have_same_loss_and_accuracy(environ, mnis
     model = keras.models.load_model('/tmp/model/retraining/pca-filtered-model-20-components.h5', custom_objects={'PCA': layers.PCA})
     actual = model.evaluate(X_test, one_hot_y_test)
 
-    assert allclose(expected, actual)
+    assert allclose(expected, actual, atol=0.001)
