@@ -8,9 +8,9 @@ from re import findall
 
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from tools.datasets import mnist
-from tools.models import fc_100_100_10, pca_filtered_model, train, load_from_file
-from tools.attacks import fast_gradient_sign, fgs_adversarial_score
+from datasets import mnist
+from models import fc_100_100_10, pca_filtered_model, train, load_from_file
+from attacks import fast_gradient_sign, fgs_adversarial_score
 
 PREFIX = os.environ.get('PREFIX', '.')
 
