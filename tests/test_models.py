@@ -82,6 +82,6 @@ def test_tensorboard_events_files_are_created(mnist, environ):
     train(model, X_train, y_train, epochs=2, tensorboard=True)
     assert isclose(accuracy(model, X_test, y_test), 0.54, abs_tol=0.01)
 
-    dirname = "/tmp/tensorboardlogs/fc-100-100-10/"
+    dirname = "/tmp/model/tensorboardlogs/fc-100-100-10/"
     os.path.exists(dirname)
     shutil.rmtree(dirname)

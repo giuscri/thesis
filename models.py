@@ -96,7 +96,7 @@ def train(
     if tensorboard:
         random_string = hexlify(urandom(32)[:10]).decode()
         prefix = environ.get("PREFIX", ".")
-        log_dir = f"{prefix}/tensorboardlogs/{model.name}/{random_string}"
+        log_dir = f"{prefix}/model/tensorboardlogs/{model.name}/{random_string}"
         callbacks.append(TensorBoard(log_dir=log_dir, histogram_freq=0))
 
     model.fit(
