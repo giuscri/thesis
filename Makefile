@@ -18,3 +18,9 @@ clean:
 
 lint:
 	black .
+
+protect:
+	sudo chattr -R +i model/ mnist/ fast-gradient-sign/
+
+unprotect:
+	sudo chattr -R -i model/ mnist/ fast-gradient-sign/
