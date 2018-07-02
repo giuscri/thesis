@@ -45,9 +45,9 @@ def test_fgs_adversarial_score_when_using_retrain_defense(environ):
     assert np.allclose(actual, expected, atol=5)
 
 @pytest.mark.skipif('DISPLAY' in os.environ, reason='blocks test suite inside X')
-def test_plot_is_saved(environ):
+def test_trying_to_plot_will_raise_an_error(environ):
     command = ['python', 'bin/fast_gradient_sign_attack', '--model', 'tests/model/reconstruction/pca-filtered-model-784-components.h5', '--eta', '0.05', '--plot']
     process = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
     assert process.returncode == 1
 
-    assert 'DISPLAY' in os.environ or b'no $DISPLAY environment variable' in process.stderr # check fgs.py will try to call plt.show()
+    assert 'DISPLAY' in os.environ or b'no $DISPLAY environment variable' in process.stderr
