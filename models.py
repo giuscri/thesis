@@ -20,9 +20,7 @@ def save_to_file(model, filename):
     return model
 
 def load_from_file(filename):
-    model = load_model(filename, custom_objects={
-        'PCA': PCA,
-    })
+    model = load_model(filename, custom_objects={'PCA': PCA})
     model.name, _ = splitext(basename(filename))
     return model
 
@@ -40,11 +38,7 @@ def fc_100_100_10():
     sgd = SGD(lr=0.01, momentum=0.9, nesterov=True) # optimizer used by 1704.02654.pdf
 
     model.name = "fc-100-100-10"
-    model.compile(
-        optimizer=sgd,
-        loss='categorical_crossentropy',
-        metrics=['accuracy']
-    )
+    model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
     return model
 
@@ -59,11 +53,7 @@ def __cached_pca_filtered_model(model, serializedX_train, n_components=None):
         layers.append(layer)
 
     filtered_model = Sequential(layers)
-    filtered_model.compile(
-        optimizer=model.optimizer,
-        loss=model.loss,
-        metrics=model.metrics
-    )
+    filtered_model.compile(optimizer=model.optimizer, loss=model.loss, metrics=model.metrics)
 
     for wrapped_layer, layer in zip(model.layers, filtered_model.layers[1:]):
         layer.set_weights(wrapped_layer.get_weights())

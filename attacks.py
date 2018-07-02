@@ -45,7 +45,8 @@ def fast_gradient_sign(model, X, y_target=None, eta=0.15):
 
     serializedX = dumps(X)
     serializedy_target = dumps(y_target)
-    X_sym, one_hot_y_target_sym, example_sym, eta_sym = __fast_gradient_sign_tf_symbols(model, serializedX, serializedy_target)
+    symbols = __fast_gradient_sign_tf_symbols(model, serializedX, serializedy_target)
+    X_sym, one_hot_y_target_sym, example_sym, eta_sym = symbols
     session = K.get_session()
     feed_dict = {X_sym: X, eta_sym: eta}
     if with_target: feed_dict[one_hot_y_target_sym] = one_hot_y_target
