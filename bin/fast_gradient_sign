@@ -17,9 +17,12 @@ PREFIX = os.environ.get('PREFIX', '.')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 argumentparser = argparse.ArgumentParser()
-argumentparser.add_argument('--plot', action='store_true')
-argumentparser.add_argument('--eta', nargs='+', type=float)
-argumentparser.add_argument('--model', nargs='+')
+argumentparser.add_argument('--plot', action='store_true',
+                            help='plot data')
+argumentparser.add_argument('--eta', nargs='+', type=float,
+                            help='values eta to try when generating adv/ examples')
+argumentparser.add_argument('--model', nargs='+',
+                            help='path to models to attack')
 arguments = argumentparser.parse_args()
 
 PLOT = arguments.plot

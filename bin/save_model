@@ -12,12 +12,18 @@ import numpy as np
 from argparse import ArgumentParser
 
 argumentparser = ArgumentParser()
-argumentparser.add_argument('--no-defense', action='store_true')
-argumentparser.add_argument('--pca', type=int, nargs='+', default=[])
-argumentparser.add_argument('--epochs', type=int, required=True)
-argumentparser.add_argument('--retraining', action='store_true')
-argumentparser.add_argument('--reconstruction', action='store_true')
-argumentparser.add_argument('--random-state', type=int)
+argumentparser.add_argument('--no-defense', action='store_true',
+                            help='save fully connected network without any defense')
+argumentparser.add_argument('--pca', type=int, nargs='+', default=[],
+                            help='specify number of components to keep when using PCA')
+argumentparser.add_argument('--epochs', type=int, required=True,
+                            help='number of epochs to train models for')
+argumentparser.add_argument('--retraining', action='store_true',
+                            help='use retraining defense when using filters')
+argumentparser.add_argument('--reconstruction', action='store_true',
+                            help='use retraining defense when using filters')
+argumentparser.add_argument('--random-state', type=int,
+                            help='random state to specify for reproducible trainings')
 arguments = argumentparser.parse_args()
 
 NO_DEFENSE = arguments.no_defense
