@@ -37,21 +37,20 @@ if RANDOM_STATE is not None:
 if NO_DEFENSE:
     model = fc_100_100_10()
     train(model, X_train, y_train, epochs=EPOCHS, verbose=True)
-    filename = f'{PREFIX}/model/fc-100-100-10.h5'
-    save_to_file(model, filename=filename)
-
-if RECONSTRUCTION:
-    no_defense_model = fc_100_100_10()
-    train(no_defense_model, X_train, y_train, epochs=EPOCHS, verbose=True)
+    dirname = f"{PREFIX}/model/fc-100-100-10/"
+    save_to_file(model, dirname)
 
 for n_components in PCA:
     if RECONSTRUCTION:
-        model = pca_filtered_model(no_defense_model, X_train, n_components)
-        filename = f'{PREFIX}/model/reconstruction/pca-filtered-model-{n_components}-components.h5'
-        save_to_file(model, filename=filename)
+        model = pca_filtered_model(fc_100_100_10(), X_train, n_components)
+        train(model, X_train, y_train, epochs=EPOCHS, verbose=True, preprocess=False)
+        dirname = f"{PREFIX}/model/reconstruction/pca-filtered-model-{n_components}-components/"
+        save_to_file(model, dirname)
 
     if RETRAINING:
         model = pca_filtered_model(fc_100_100_10(), X_train, n_components)
-        train(model, X_train, y_train, epochs=EPOCHS, verbose=True)
-        filename = f'{PREFIX}/model/retraining/pca-filtered-model-{n_components}-components.h5'
-        save_to_file(model, filename=filename)
+        train(model, X_train, y_train, epochs=EPOCHS, verbose=True, preprocess=True)
+        dirname = (
+            f"{PREFIX}/model/retraining/pca-filtered-model-{n_components}-components/"
+        )
+        save_to_file(model, dirname)

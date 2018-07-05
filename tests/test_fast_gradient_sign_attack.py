@@ -12,8 +12,8 @@ def test_fgs_adversarial_score_when_using_reconstruction_defense(environ):
         "python",
         "bin/fast_gradient_sign",
         "--model",
-        "tests/model/reconstruction/pca-filtered-model-784-components.h5",
-        "tests/model/reconstruction/pca-filtered-model-100-components.h5",
+        "tests/model/reconstruction/pca-filtered-model-784-components",
+        "tests/model/reconstruction/pca-filtered-model-100-components",
         "--eta",
         "0.05",
         "0.1",
@@ -41,8 +41,8 @@ def test_fgs_adversarial_score_when_using_retrain_defense(environ):
         "python",
         "bin/fast_gradient_sign",
         "--model",
-        "tests/model/retraining/pca-filtered-model-784-components.h5",
-        "tests/model/retraining/pca-filtered-model-100-components.h5",
+        "tests/model/retraining/pca-filtered-model-784-components",
+        "tests/model/retraining/pca-filtered-model-100-components",
         "--eta",
         "0.05",
         "0.1",
@@ -54,15 +54,21 @@ def test_fgs_adversarial_score_when_using_retrain_defense(environ):
 
     assert len(result.keys()) == 2
 
-    expected = np.array([21, 61, 94])
+    score_when_reconstruction = np.array([22, 53, 94])
     scoredict = result["retraining/pca-filtered-model-784-components"]
-    actual = np.array([scoredict["0.05"], scoredict["0.1"], scoredict["0.2"]])
-    assert np.allclose(actual, expected, atol=5)
+    score_when_retraining = np.array(
+        [scoredict["0.05"], scoredict["0.1"], scoredict["0.2"]]
+    )
+    tolerance = 5
+    assert np.all(score_when_retraining < score_when_reconstruction + tolerance)
 
-    expected = np.array([16, 48, 91])
+    score_when_reconstruction = np.array([17, 43, 88])
     scoredict = result["retraining/pca-filtered-model-100-components"]
-    actual = np.array([scoredict["0.05"], scoredict["0.1"], scoredict["0.2"]])
-    assert np.allclose(actual, expected, atol=5)
+    score_when_retraining = np.array(
+        [scoredict["0.05"], scoredict["0.1"], scoredict["0.2"]]
+    )
+    tolerance = 5
+    assert np.all(score_when_retraining < score_when_reconstruction + tolerance)
 
 
 @pytest.mark.skipif("DISPLAY" in os.environ, reason="blocks test suite inside X")
@@ -71,7 +77,7 @@ def test_trying_to_plot_will_raise_an_error(environ):
         "python",
         "bin/fast_gradient_sign",
         "--model",
-        "tests/model/reconstruction/pca-filtered-model-784-components.h5",
+        "tests/model/reconstruction/pca-filtered-model-784-components",
         "--eta",
         "0.05",
         "--plot",
