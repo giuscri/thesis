@@ -59,7 +59,6 @@ def fast_gradient_sign(model, X, y_target=None, eta=0.15):
 def fgs_adversarial_score(model, X_test, y_test, eta=None, y_target=None):
     X, y = filter_correctly_classified_examples(model, X_test, y_test)
     adversarialX = fast_gradient_sign(model, X, y_target, eta)
-    score = 1 - len(
-        filter_correctly_classified_examples(model, adversarialX, y)[0]
-    ) / len(X)
+    fooling_examples, _ = filter_correctly_classified_examples(model, adversarialX, y)
+    score = 1 - len(fooling_examples) / len(X)
     return score
