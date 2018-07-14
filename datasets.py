@@ -21,18 +21,14 @@ def mnist():
         os.mkdir("mnist/")
     if not exists("mnist/train.csv"):
         info("downloading mnist training set")
-        r = requests.get(
-            "https://pjreddie.com/media/files/mnist_train.csv", stream=True
-        )
+        r = requests.get("https://pjreddie.com/media/files/mnist_train.csv", stream=True)
         contentlength = int(r.headers["Content-Length"])
         nchunks = 420
         chunk_size = contentlength // nchunks
         total = nchunks if contentlength % nchunks == 0 else nchunks + 1
 
         chunks = []
-        for i, chunk in tqdm(
-            enumerate(r.iter_content(chunk_size=chunk_size)), total=total
-        ):
+        for i, chunk in tqdm(enumerate(r.iter_content(chunk_size=chunk_size)), total=total):
             chunks.append(chunk)
 
         text = b"".join(chunks).decode()
@@ -48,9 +44,7 @@ def mnist():
         total = nchunks if contentlength % nchunks == 0 else nchunks + 1
 
         chunks = []
-        for i, chunk in tqdm(
-            enumerate(r.iter_content(chunk_size=chunk_size)), total=total
-        ):
+        for i, chunk in tqdm(enumerate(r.iter_content(chunk_size=chunk_size)), total=total):
             chunks.append(chunk)
 
         text = b"".join(chunks).decode()

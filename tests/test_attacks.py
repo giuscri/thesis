@@ -1,9 +1,5 @@
 from .context import attacks
-from attacks import (
-    fast_gradient_sign,
-    fgs_adversarial_score,
-    __fast_gradient_sign_tf_symbols,
-)
+from attacks import fast_gradient_sign, fgs_adversarial_score, __fast_gradient_sign_tf_symbols
 from .context import models
 from models import fc_100_100_10, train, accuracy
 
@@ -18,9 +14,7 @@ def test_fgs_adversarial_score(mnist):
     network = fc_100_100_10()
     train(network, X_train, y_train, epochs=2)
 
-    assert isclose(
-        fgs_adversarial_score(network, X_test, y_test, eta=0.25), 0.99, abs_tol=0.01
-    )
+    assert isclose(fgs_adversarial_score(network, X_test, y_test, eta=0.25), 0.99, abs_tol=0.01)
 
 
 def test_fgs_examples_are_clipped(mnist):
@@ -52,9 +46,5 @@ def test_fgs_generated_symbols_are_cached(mnist):
 
     network = fc_100_100_10()
 
-    symbols = __fast_gradient_sign_tf_symbols(
-        network, serializedX_train, serializedy_train
-    )
-    assert symbols is __fast_gradient_sign_tf_symbols(
-        network, serializedX_train, serializedy_train
-    )
+    symbols = __fast_gradient_sign_tf_symbols(network, serializedX_train, serializedy_train)
+    assert symbols is __fast_gradient_sign_tf_symbols(network, serializedX_train, serializedy_train)

@@ -35,17 +35,15 @@ def load_from_file(dirname):
 
 
 def fc_100_100_10():
-    model = Sequential(
-        [
-            Flatten(batch_input_shape=(None, 28, 28)),
-            Dense(100),
-            Activation("sigmoid"),
-            Dense(100),
-            Activation("sigmoid"),
-            Dense(10),
-            Activation("softmax"),
-        ]
-    )
+    model = Sequential([
+        Flatten(batch_input_shape=(None, 28, 28)),
+        Dense(100),
+        Activation("sigmoid"),
+        Dense(100),
+        Activation("sigmoid"),
+        Dense(10),
+        Activation("softmax"),
+    ])
 
     sgd = SGD(lr=0.01, momentum=0.9, nesterov=True)  # optimizer used by 1704.02654.pdf
 
@@ -66,9 +64,7 @@ def pca_filtered_model(model, X_train=None, n_components=None, pca=None):
         return filtered_flatX.reshape(-1, *element_shape)
 
     filtered_model = clone_model(model)
-    filtered_model.compile(
-        optimizer=model.optimizer, loss=model.loss, metrics=model.metrics
-    )
+    filtered_model.compile(optimizer=model.optimizer, loss=model.loss, metrics=model.metrics)
     filtered_model.set_weights(model.get_weights())
 
     if pca is None:
@@ -83,16 +79,7 @@ def pca_filtered_model(model, X_train=None, n_components=None, pca=None):
     return filtered_model
 
 
-def train(
-    model,
-    X_train,
-    y_train,
-    epochs=500,
-    early_stopping=True,
-    tensorboard=True,
-    verbose=True,
-    preprocess=False,
-):
+def train(model, X_train, y_train, epochs=500, early_stopping=True, tensorboard=True, verbose=True, preprocess=False):
     _verbose = 1 if verbose else 0
     num_classes = len(np.unique(y_train))
     one_hot_y_train = to_categorical(y_train, num_classes=num_classes)
@@ -110,15 +97,7 @@ def train(
     if preprocess:
         X_train = model.preprocessing_fn(X_train)
 
-    model.fit(
-        X_train,
-        one_hot_y_train,
-        epochs=epochs,
-        batch_size=500,
-        verbose=_verbose,
-        callbacks=callbacks,
-        validation_split=0.2,
-    )
+    model.fit(X_train, one_hot_y_train, epochs=epochs, batch_size=500, verbose=_verbose, callbacks=callbacks, validation_split=0.2)
     return model
 
 

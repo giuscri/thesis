@@ -7,7 +7,7 @@ dockerbuild:
 dockertest: dockerbuild
 	sudo docker run --rm thesis python -m pytest -sv --cov=. --cov-config=.coveragerc tests/
 
-pytest: lint
+pytest:
 	pipenv run python -m pytest -v -s
 
 install:
@@ -15,9 +15,6 @@ install:
 
 clean:
 	[[ -f .dockerignore ]] && rm -rf `cat .dockerignore`
-
-lint:
-	black .
 
 protect:
 	sudo chattr -R +i model/ mnist/ fast-gradient-sign/

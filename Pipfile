@@ -15,7 +15,6 @@ cleverhans = {git = "https://github.com/tensorflow/cleverhans.git"}
 pytest-cov = "*"
 coveralls = "*"
 tqdm = "*"
-black = "*"
 
 [dev-packages]
 
