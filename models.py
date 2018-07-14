@@ -2,7 +2,6 @@ from os import makedirs, urandom, environ
 from os.path import exists, splitext, basename, dirname
 from binascii import hexlify
 from functools import partial
-from pickle import load, dump
 
 from keras.models import Sequential, load_model, clone_model
 from keras.layers import Flatten, Dense, Activation
@@ -14,14 +13,14 @@ import numpy as np
 from sklearn.decomposition import PCA
 
 from datasets import mnist
+from utils import dump_pickle_to_file, load_pickle_from_file, random_string
 
 
 def save_to_file(model, dirname):
     makedirs(dirname, exist_ok=True)
     model.save_weights(f"{dirname}/weights.h5")
     if "_pca" in model.__dict__:
-        with open(f"{dirname}/pca.pkl", "wb") as f:
-            dump(model._pca, f)
+        dump_pickle_to_file(model._pca, f"{dirname}/pca.pkl")
     return model
 
 
@@ -29,8 +28,7 @@ def load_from_file(dirname):
     model = fc_100_100_10()
     model.load_weights(f"{dirname}/weights.h5")
     if exists(f"{dirname}/pca.pkl"):
-        with open(f"{dirname}/pca.pkl", "rb") as f:
-            pca = load(f)
+        pca = load_pickle_from_file(f"{dirname}/pca.pkl")
         X_train, _, _, _ = mnist()
         model = pca_filtered_model(model, X_train, pca=pca)
     return model
@@ -105,9 +103,8 @@ def train(
         callbacks.append(EarlyStopping(monitor="val_acc", min_delta=0.001, patience=10))
 
     if tensorboard:
-        random_string = hexlify(urandom(32)[:10]).decode()
         prefix = environ.get("PREFIX", ".")
-        log_dir = f"{prefix}/model/tensorboardlogs/{model.name}/{random_string}"
+        log_dir = f"{prefix}/model/tensorboardlogs/{model.name}/{random_string()}"
         callbacks.append(TensorBoard(log_dir=log_dir, histogram_freq=0))
 
     if preprocess:

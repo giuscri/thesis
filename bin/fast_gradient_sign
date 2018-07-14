@@ -2,7 +2,6 @@
 
 import numpy as np
 import itertools, argparse, json, logging, os
-from binascii import hexlify
 from re import findall
 from matplotlib import pyplot as plt
 import sys
@@ -11,6 +10,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from datasets import mnist
 from models import fc_100_100_10, pca_filtered_model, train, load_from_file
 from attacks import fast_gradient_sign, fgs_adversarial_score
+from utils import random_string, dump_json_to_file
 
 logging.basicConfig(format='%(asctime)s - %(message)s')
 logger = logging.getLogger()
@@ -59,10 +59,7 @@ for model_identifier, eta in itertools.product(model_dictionary_keys, ETA):
 print(json.dumps(score_dictionary))
 
 for model_identifier in score_dictionary.keys():
-    directory = os.path.dirname(model_identifier)
-    os.makedirs(f'{PREFIX}/fast-gradient-sign/{directory}', exist_ok=True)
-    with open(f'{PREFIX}/fast-gradient-sign/{model_identifier}.json', 'w') as f:
-        json.dump(score_dictionary[model_identifier], f)
+    dump_json_to_file(score_dictionary[model_identifier], f"{PREFIX}/fast-gradient-sign/{model_identifier}.json")
 
 if PLOT:
     plt.grid(linestyle='--')
@@ -79,6 +76,5 @@ if PLOT:
 
     plt.legend()
     os.makedirs(f'{PREFIX}/fast-gradient-sign/', exist_ok=True)
-    random_string = hexlify(os.urandom(32)[:10]).decode()
-    plt.savefig(f'{PREFIX}/fast-gradient-sign/{random_string}.png')
+    plt.savefig(f'{PREFIX}/fast-gradient-sign/{random_string()}.png')
     plt.show()
