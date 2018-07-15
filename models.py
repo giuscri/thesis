@@ -6,7 +6,7 @@ from functools import partial
 from keras.models import Sequential, load_model, clone_model
 from keras.layers import Flatten, Dense, Activation
 from keras.optimizers import SGD
-from keras.callbacks import TensorBoard, EarlyStopping
+from keras.callbacks import TensorBoard, EarlyStopping, ReduceLROnPlateau
 from keras.utils import to_categorical
 
 import numpy as np
@@ -79,15 +79,19 @@ def pca_filtered_model(model, X_train=None, n_components=None, pca=None):
     return filtered_model
 
 
-def train(model, X_train, y_train, epochs=500, early_stopping=True, tensorboard=True, verbose=True, preprocess=False):
+def train(model, X_train, y_train, epochs=500, early_stopping=True, tensorboard=True, verbose=True, preprocess=False, reduce_lr_on_plateau=True):
     _verbose = 1 if verbose else 0
     num_classes = len(np.unique(y_train))
     one_hot_y_train = to_categorical(y_train, num_classes=num_classes)
 
     callbacks = []
+    patience = 10
+
+    if reduce_lr_on_plateau:
+        callbacks.append(ReduceLROnPlateau(monitor="val_acc", patience=patience))
 
     if early_stopping:
-        callbacks.append(EarlyStopping(monitor="val_acc", min_delta=0.001, patience=10))
+        callbacks.append(EarlyStopping(monitor="val_acc", patience=2 * patience))
 
     if tensorboard:
         prefix = environ.get("PREFIX", ".")
