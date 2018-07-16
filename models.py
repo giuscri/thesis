@@ -6,7 +6,7 @@ from functools import partial
 from keras.models import Sequential, load_model, clone_model
 from keras.layers import Flatten, Dense, Activation
 from keras.optimizers import SGD
-from keras.callbacks import TensorBoard, EarlyStopping, ReduceLROnPlateau
+from keras.callbacks import TensorBoard, EarlyStopping, ReduceLROnPlateau, Callback
 from keras.utils import to_categorical
 
 import numpy as np
@@ -14,6 +14,34 @@ from sklearn.decomposition import PCA
 
 from datasets import mnist
 from utils import dump_pickle_to_file, load_pickle_from_file, random_string
+
+
+class StopOnStableWeights(Callback):
+    def __init__(self, delta=0.05, patience=10):
+        self.collected_weights = []
+        self.len_collected_weights = patience
+        self.delta = delta
+
+    def on_epoch_end(self, epoch, logs=None):
+        weights = self.model.get_weights()
+        self.collected_weights.append(weights)
+
+        if len(self.collected_weights) < self.len_collected_weights:
+            return
+
+        stacked_weights = np.stack(self.collected_weights)
+        weights_per_epoch = len(self.collected_weights[0])
+        weights_relative_std = []
+        for i in range(weights_per_epoch):
+            relative_std = np.std(stacked_weights[:, i]) / np.abs(np.mean(stacked_weights[:, i]))
+            weights_relative_std.append(np.mean(relative_std))
+
+        maximum_relative_std = max(weights_relative_std)
+        print(maximum_relative_std)
+        if maximum_relative_std < self.delta: self.model.stop_training = True
+
+        self.collected_weights = self.collected_weights[1:]
+        assert len(self.collected_weights) == self.len_collected_weights - 1
 
 
 def save_to_file(model, dirname):
@@ -79,7 +107,7 @@ def pca_filtered_model(model, X_train=None, n_components=None, pca=None):
     return filtered_model
 
 
-def train(model, X_train, y_train, epochs=500, early_stopping=True, tensorboard=True, verbose=True, preprocess=False, reduce_lr_on_plateau=True):
+def train(model, X_train, y_train, epochs=500, verbose=True, preprocess=False, early_stopping=True, tensorboard=True, reduce_lr_on_plateau=True, stop_on_stable_weights=True):
     _verbose = 1 if verbose else 0
     num_classes = len(np.unique(y_train))
     one_hot_y_train = to_categorical(y_train, num_classes=num_classes)
@@ -91,7 +119,10 @@ def train(model, X_train, y_train, epochs=500, early_stopping=True, tensorboard=
         callbacks.append(ReduceLROnPlateau(monitor="val_acc", patience=patience))
 
     if early_stopping:
-        callbacks.append(EarlyStopping(monitor="val_acc", patience=2 * patience))
+        callbacks.append(EarlyStopping(monitor="val_acc", patience=patience))
+
+    if stop_on_stable_weights:
+        callbacks.append(StopOnStableWeights(patience=patience))
 
     if tensorboard:
         prefix = environ.get("PREFIX", ".")
