@@ -11,7 +11,7 @@ requests = "*"
 pandas = "*"
 sklearn = "*"
 matplotlib = "*"
-cleverhans = {git = "https://github.com/tensorflow/cleverhans.git"}
+cleverhans = {ref = "0df025c77dce0b32e4d5a0fca107e4acedb50563", git = "https://github.com/tensorflow/cleverhans.git"}
 pytest-cov = "*"
 coveralls = "*"
 tqdm = "*"
