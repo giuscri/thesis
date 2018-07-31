@@ -107,7 +107,7 @@ def pca_filtered_model(model, X_train=None, n_components=None, pca=None):
     return filtered_model
 
 
-def train(model, X_train, y_train, epochs=500, verbose=True, preprocess=False, early_stopping=True, tensorboard=True, reduce_lr_on_plateau=True, stop_on_stable_weights=True):
+def train(model, X_train, y_train, epochs=500, verbose=True, preprocess=False, early_stopping=False, tensorboard=True, reduce_lr_on_plateau=False, stop_on_stable_weights=False):
     _verbose = 1 if verbose else 0
     num_classes = len(np.unique(y_train))
     one_hot_y_train = to_categorical(y_train, num_classes=num_classes)
