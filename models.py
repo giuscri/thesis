@@ -137,8 +137,7 @@ def train(model, X_train, y_train, epochs=500, verbose=True, preprocess=False, e
     if epochs == -1: # when `epochs` is -1 train _forever_
         epochs = 10**100
 
-    model.fit(X_train, one_hot_y_train, epochs=epochs, batch_size=500, verbose=_verbose, callbacks=callbacks, validation_split=0.2)
-    return model
+    return model.fit(X_train, one_hot_y_train, epochs=epochs, batch_size=500, verbose=_verbose, callbacks=callbacks, validation_split=0.2)
 
 
 def accuracy(model, X_test, y_test, verbose=True):
