@@ -77,4 +77,4 @@ if PLOT:
     plt.legend()
     os.makedirs(f'{PREFIX}/fast-gradient-sign/', exist_ok=True)
     plt.savefig(f'{PREFIX}/fast-gradient-sign/{random_string()}.png')
-    plt.show()
+    if "DISPLAY" in os.environ: plt.show()
