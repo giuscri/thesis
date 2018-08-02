@@ -65,12 +65,3 @@ def test_fgs_adversarial_score_when_using_retrain_defense(environ):
     score_when_retraining = np.array([scoredict["0.05"], scoredict["0.1"], scoredict["0.2"]])
     tolerance = 5
     assert np.all(score_when_retraining < score_when_reconstruction + tolerance)
-
-
-@pytest.mark.skipif("DISPLAY" in os.environ, reason="blocks test suite inside X")
-def test_trying_to_plot_will_raise_an_error(environ):
-    command = ["python", "bin/fast_gradient_sign", "--model", "tests/model/reconstruction/pca-filtered-model-784-components", "--eta", "0.05", "--plot"]
-    process = subprocess.run(command, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL)
-    assert process.returncode == 1
-
-    assert "DISPLAY" in os.environ or b"no $DISPLAY environment variable" in process.stderr
