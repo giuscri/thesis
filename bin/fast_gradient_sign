@@ -64,7 +64,7 @@ for model_identifier in score_dictionary.keys():
 if PLOT:
     plt.grid(linestyle='--')
     plt.xlabel('$\eta$')
-    plt.ylabel('Adversarial success (\%)')
+    plt.ylabel('Adversarial success (%)')
 
     for model_identifier in score_dictionary.keys():
         scores_for_model = score_dictionary[model_identifier]
