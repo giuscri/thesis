@@ -3,6 +3,8 @@
 import numpy as np
 import itertools, argparse, json, logging, os
 from re import findall
+import matplotlib
+matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 import sys
 
