@@ -132,7 +132,9 @@ def train(model, X_train, y_train, epochs=500, verbose=True, preprocess=False, e
         callbacks.append(TensorBoard(log_dir=log_dir, histogram_freq=0))
 
     if preprocess:
-        X_train = model.preprocessing_fn(X_train)
+        raw_X_train = X_train
+        X_train = model.preprocessing_fn(raw_X_train)
+        assert raw_X_train.shape == X_train.shape
 
     if epochs == -1: # when `epochs` is -1 train _forever_
         epochs = 10**100
