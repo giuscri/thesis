@@ -37,7 +37,6 @@ class StopOnStableWeights(Callback):
             weights_relative_std.append(np.mean(relative_std))
 
         maximum_relative_std = max(weights_relative_std)
-        print(maximum_relative_std)
         if maximum_relative_std < self.delta: self.model.stop_training = True
 
         self.collected_weights = self.collected_weights[1:]
