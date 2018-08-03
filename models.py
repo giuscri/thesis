@@ -8,6 +8,7 @@ from keras.layers import Flatten, Dense, Activation
 from keras.optimizers import SGD
 from keras.callbacks import TensorBoard, EarlyStopping, ReduceLROnPlateau, Callback
 from keras.utils import to_categorical
+import keras.backend as K
 
 import numpy as np
 from sklearn.decomposition import PCA
@@ -130,13 +131,28 @@ def train(model, X_train, y_train, epochs=500, verbose=True, preprocess=False, e
         log_dir = f"{prefix}/model/tensorboardlogs/{model.name}/{random_string()}"
         callbacks.append(TensorBoard(log_dir=log_dir, histogram_freq=0))
 
+    if epochs == -1: # when `epochs` is -1 train _forever_
+        epochs = 10**100
+
     if preprocess:
         raw_X_train = X_train
         X_train = model.preprocessing_fn(raw_X_train)
         assert raw_X_train.shape == X_train.shape
 
-    if epochs == -1: # when `epochs` is -1 train _forever_
-        epochs = 10**100
+        model.fit(raw_X_train, one_hot_y_train, epochs=epochs, batch_size=500, verbose=_verbose, callbacks=callbacks, validation_split=0.2)
+
+        callbacks = []
+        if reduce_lr_on_plateau:
+            callbacks.append(ReduceLROnPlateau(monitor="val_acc", patience=reduce_lr_on_plateau_patience))
+
+        if early_stopping:
+            callbacks.append(EarlyStopping(monitor="val_acc", patience=early_stopping_patience))
+
+        if stop_on_stable_weights:
+            callbacks.append(StopOnStableWeights(patience=stop_on_stable_weights_patience))
+
+        session = K.get_session()
+        session.run(model.optimizer.lr.assign(0.01))
 
     return model.fit(X_train, one_hot_y_train, epochs=epochs, batch_size=500, verbose=_verbose, callbacks=callbacks, validation_split=0.2)
 
