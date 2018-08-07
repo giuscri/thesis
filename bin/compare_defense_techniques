@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import sys, os, json, argparse
+import numpy as np
+
+def dictionary_difference(dict1, dict2):
+    assert dict1.keys() == dict2.keys()
+    r = {}
+    for k in dict1:
+        r[k] = dict1[k] - dict2[k]
+    return r
+
+argumentparser = argparse.ArgumentParser()
+argumentparser.add_argument('--session-id', required=True)
+arguments = argumentparser.parse_args()
+session_id = arguments.session_id
+
+with open(f"./fast-gradient-sign/{session_id}/score_dictionary.json") as f:
+    score_dictionary = json.load(f)
+
+difference_per_curve = []
+
+for n_components in [784, 331, 100, 80, 60, 20]:
+    reconstruction_key = f"reconstruction/pca-filtered-model-{n_components}-components"
+    retraining_key = f"retraining/pca-filtered-model-{n_components}-components"
+    reconstruction_score = score_dictionary[reconstruction_key]
+    retraining_score = score_dictionary[retraining_key]
+    score_difference = dictionary_difference(reconstruction_score, retraining_score)
+    average_difference = np.mean(list(score_difference.values()))
+    difference_per_curve.append(average_difference)
+
+print(np.mean(difference_per_curve))
