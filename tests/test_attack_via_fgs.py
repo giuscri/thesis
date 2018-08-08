@@ -4,7 +4,7 @@ import numpy as np
 
 @pytest.fixture(autouse=True)
 def teardown():
-    shutil.rmtree("/tmp/fast-gradient-sign", ignore_errors=True)
+    shutil.rmtree("/tmp/attack", ignore_errors=True)
 
 
 def test_fgs_adversarial_score_when_using_reconstruction_defense(environ):

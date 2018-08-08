@@ -19,7 +19,7 @@ clean:
 	[[ -f .dockerignore ]] && rm -rf `cat .dockerignore`
 
 protect:
-	sudo chattr -R +i model/ mnist/ fast-gradient-sign/
+	sudo chattr -R +i model/ mnist/ attack/
 
 unprotect:
-	sudo chattr -R -i model/ mnist/ fast-gradient-sign/
+	sudo chattr -R -i model/ mnist/ attack/

@@ -15,7 +15,7 @@ argumentparser.add_argument('--session-id', required=True)
 arguments = argumentparser.parse_args()
 session_id = arguments.session_id
 
-with open(f"./fast-gradient-sign/{session_id}/score_dictionary.json") as f:
+with open(f"./attack/fgs/{session_id}/score_dictionary.json") as f:
     score_dictionary = json.load(f)
 
 difference_per_curve = []
