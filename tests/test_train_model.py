@@ -14,7 +14,7 @@ def teardown():
 
 
 def test_pca_when_reconstruction_is_saved(environ):
-    command = ["python", "bin/save_model", "--reconstruction", "--epochs", "0", "--pca", "100", "20"]
+    command = ["python", "bin/train-model", "--reconstruction", "--epochs", "0", "--pca", "100", "20"]
     process = subprocess.run(command, stdout=subprocess.PIPE)
     assert process.returncode == 0
     assert os.path.exists("/tmp/model/")
@@ -27,7 +27,7 @@ def test_pca_when_reconstruction_is_saved(environ):
 
 
 def test_pca_when_retraining_is_saved(environ):
-    command = ["python", "bin/save_model", "--retraining", "--epochs", "0", "--pca", "100", "20"]
+    command = ["python", "bin/train-model", "--retraining", "--epochs", "0", "--pca", "100", "20"]
     process = subprocess.run(command, stdout=subprocess.PIPE)
     assert process.returncode == 0
     assert os.path.exists("/tmp/model/")
@@ -40,7 +40,7 @@ def test_pca_when_retraining_is_saved(environ):
 
 
 def test_no_defense_network_is_saved(environ):
-    command = ["python", "bin/save_model", "--no-defense", "--epochs", "0"]
+    command = ["python", "bin/train-model", "--no-defense", "--epochs", "0"]
     process = subprocess.run(command, stdout=subprocess.PIPE)
     assert process.returncode == 0
     assert os.path.exists("/tmp/model/")
@@ -51,7 +51,7 @@ def test_no_defense_network_is_saved(environ):
 def test_models_with_same_random_state_have_same_loss_and_accuracy(environ, mnist):
     X_train, _, X_test, y_test = mnist
     one_hot_y_test = keras.utils.to_categorical(y_test, 10)
-    command = ["python", "bin/save_model", "--retraining", "--pca", "20", "--epochs", "2", "--random-state", "1234"]
+    command = ["python", "bin/train-model", "--retraining", "--pca", "20", "--epochs", "2", "--random-state", "1234"]
 
     process = subprocess.run(command, stdout=subprocess.PIPE)
     model = fc_100_100_10()

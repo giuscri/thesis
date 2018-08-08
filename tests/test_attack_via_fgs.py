@@ -10,7 +10,7 @@ def teardown():
 def test_fgs_adversarial_score_when_using_reconstruction_defense(environ):
     command = [
         "python",
-        "bin/fast_gradient_sign",
+        "bin/attack-via-fgs",
         "--model",
         "tests/model/reconstruction/pca-filtered-model-784-components",
         "tests/model/reconstruction/pca-filtered-model-100-components",
@@ -39,7 +39,7 @@ def test_fgs_adversarial_score_when_using_reconstruction_defense(environ):
 def test_fgs_adversarial_score_when_using_retrain_defense(environ):
     command = [
         "python",
-        "bin/fast_gradient_sign",
+        "bin/attack-via-fgs",
         "--model",
         "tests/model/retraining/pca-filtered-model-784-components",
         "tests/model/retraining/pca-filtered-model-100-components",
