@@ -37,7 +37,10 @@ if RANDOM_STATE is not None:
 if NO_DEFENSE:
     model = fc_100_100_10()
     print(f"Training {model.name}...")
-    train(model, X_train, y_train, epochs=EPOCHS, verbose=True, stop_on_stable_weights=True, reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60, reduce_lr_on_plateau_patience=30)
+    train(model, X_train, y_train, epochs=EPOCHS, verbose=True,
+          stop_on_stable_weights=True, reduce_lr_on_plateau=True,
+          stop_on_stable_weights_patience=60, reduce_lr_on_plateau_patience=30)
+
     dirname = f"{PREFIX}/model/fc-100-100-10/"
     save_to_file(model, dirname)
 
@@ -45,14 +48,22 @@ for n_components in PCA:
     if RECONSTRUCTION:
         model = pca_filtered_model(fc_100_100_10(), X_train, n_components)
         print(f"Training {model.name}...")
-        train(model, X_train, y_train, epochs=EPOCHS, verbose=True, preprocess=False, stop_on_stable_weights=True, reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60, reduce_lr_on_plateau_patience=30)
+        train(model, X_train, y_train, epochs=EPOCHS, verbose=True,
+              preprocess=False, stop_on_stable_weights=True,
+              reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60,
+              reduce_lr_on_plateau_patience=30)
+
         dirname = f"{PREFIX}/model/reconstruction/pca-filtered-model-{n_components}-components/"
         save_to_file(model, dirname)
 
     if RETRAINING:
         model = pca_filtered_model(fc_100_100_10(), X_train, n_components)
         print(f"Training {model.name}...")
-        train(model, X_train, y_train, epochs=EPOCHS, verbose=True, preprocess=True, stop_on_stable_weights=True, reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60, reduce_lr_on_plateau_patience=30)
+        train(model, X_train, y_train, epochs=EPOCHS, verbose=True,
+              preprocess=True, stop_on_stable_weights=True,
+              reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60,
+              reduce_lr_on_plateau_patience=30)
+
         dirname = (
             f"{PREFIX}/model/retraining/pca-filtered-model-{n_components}-components/"
         )
