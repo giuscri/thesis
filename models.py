@@ -107,24 +107,30 @@ def pca_filtered_model(model, X_train=None, n_components=None, pca=None):
     return filtered_model
 
 
+def _callbacks(reduce_lr_on_plateau=False, early_stopping=False, stop_on_stable_weights=False, reduce_lr_on_plateau_patience=30, early_stopping_patience=60, stop_on_stable_weights_patience=60):
+        assert stop_on_stable_weights_patience // reduce_lr_on_plateau_patience > 1
+        assert early_stopping_patience // reduce_lr_on_plateau_patience > 1
+        # stop_on_stable_weights_patience and early_stopping_patience must be a multiple of reduce_lr_on_plateau_patience
+
+        r = []
+        if reduce_lr_on_plateau:
+            r.append(ReduceLROnPlateau(monitor="val_acc", patience=reduce_lr_on_plateau_patience))
+
+        if early_stopping:
+            r.append(EarlyStopping(monitor="val_acc", patience=early_stopping_patience))
+
+        if stop_on_stable_weights:
+            r.append(StopOnStableWeights(patience=stop_on_stable_weights_patience))
+
+        return r
+
+
 def train(model, X_train, y_train, epochs=500, verbose=True, preprocess=False, early_stopping=False, tensorboard=True, reduce_lr_on_plateau=False, stop_on_stable_weights=False, early_stopping_patience=60, stop_on_stable_weights_patience=60, reduce_lr_on_plateau_patience=30):
     _verbose = 1 if verbose else 0
     num_classes = len(np.unique(y_train))
     one_hot_y_train = to_categorical(y_train, num_classes=num_classes)
 
-    callbacks = []
-    assert stop_on_stable_weights_patience // reduce_lr_on_plateau_patience > 1
-    assert early_stopping_patience // reduce_lr_on_plateau_patience > 1
-    # stop_on_stable_weights_patience and early_stopping_patience must be a multiple of reduce_lr_on_plateau_patience
-
-    if reduce_lr_on_plateau:
-        callbacks.append(ReduceLROnPlateau(monitor="val_acc", patience=reduce_lr_on_plateau_patience))
-
-    if early_stopping:
-        callbacks.append(EarlyStopping(monitor="val_acc", patience=early_stopping_patience))
-
-    if stop_on_stable_weights:
-        callbacks.append(StopOnStableWeights(patience=stop_on_stable_weights_patience))
+    callbacks = _callbacks(reduce_lr_on_plateau, early_stopping, stop_on_stable_weights, reduce_lr_on_plateau_patience, early_stopping_patience, stop_on_stable_weights_patience)
 
     if tensorboard:
         prefix = environ.get("PREFIX", ".")
@@ -141,15 +147,7 @@ def train(model, X_train, y_train, epochs=500, verbose=True, preprocess=False, e
 
         model.fit(raw_X_train, one_hot_y_train, epochs=epochs, batch_size=500, verbose=_verbose, callbacks=callbacks, validation_split=0.2)
 
-        callbacks = []
-        if reduce_lr_on_plateau:
-            callbacks.append(ReduceLROnPlateau(monitor="val_acc", patience=reduce_lr_on_plateau_patience))
-
-        if early_stopping:
-            callbacks.append(EarlyStopping(monitor="val_acc", patience=early_stopping_patience))
-
-        if stop_on_stable_weights:
-            callbacks.append(StopOnStableWeights(patience=stop_on_stable_weights_patience))
+        callbacks = _callbacks(reduce_lr_on_plateau, early_stopping, stop_on_stable_weights, reduce_lr_on_plateau_patience, early_stopping_patience, stop_on_stable_weights_patience)
 
         session = K.get_session()
         session.run(model.optimizer.lr.assign(0.01))
