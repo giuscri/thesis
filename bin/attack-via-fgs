@@ -41,6 +41,9 @@ for filename in MODEL:
         model_identifier = f'reconstruction/{model.name}'
     elif 'retraining' in filename:
         model_identifier = f'retraining/{model.name}'
+    else:
+        model_identifier = model.name
+
     model_dictionary[model_identifier] = model
 
 def sort_key(model_identifier):
