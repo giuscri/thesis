@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+
+from argparse import ArgumentParser
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from datasets import mnist
+from attacks import fast_gradient_sign
+from models import load_from_file
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+argument_parser = ArgumentParser()
+argument_parser.add_argument('--eta', required=True, type=float,
+                             help="value of eta parameter for FGS")
+argument_parser.add_argument('--class', default=7, type=int, dest="_class",
+                             help="class from which take the original input")
+argument_parser.add_argument("--model", dest="model_path", required=True,
+                             help="path to the model to generate input against")
+
+args = argument_parser.parse_args()
+
+_, _, X_test, y_test = mnist()
+
+original_input = None
+for X, y in zip(X_test, y_test):
+    if int(y) == args._class:
+        original_input = X
+
+if original_input is None:
+    print(f"No images of class {args._class}")
+    sys.exit(1)
+
+model = load_from_file(args.model_path)
+adversarial_input = fast_gradient_sign(model, [original_input], [args._class],
+                                       eta=args.eta)[0]
+
+plt.imshow(adversarial_input)
+figure_name_eta = "".join(f"{args.eta}".split("."))
+figure_name = f"adversarial_input.{model.name}.{figure_name_eta}.{args._class}.png"
+plt.savefig(figure_name)
