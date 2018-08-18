@@ -17,7 +17,8 @@ argumentparser.add_argument("--fast-ica", action="store_true",
                             help="use FastICA image filter defense")
 argumentparser.add_argument("--n-components", type=int, nargs="+",
                             help="number of components for image filters")
-argumentparser.add_argument('--epochs', type=int, required=True, help='number of epochs to train models for')
+argumentparser.add_argument("--epochs", type=int, default=-1,
+                            help="default: let the model choose")
 argumentparser.add_argument("--retraining", action="store_true",
                             help="apply filters in retraining fashion")
 argumentparser.add_argument("--random-seed", action="store_true",
