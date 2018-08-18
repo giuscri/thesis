@@ -10,34 +10,33 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from datasets import mnist
 from models import train, accuracy, save_to_file, fc_100_100_10, pca_filtered_model, fast_ica_filtered_model
 
-argumentparser = ArgumentParser()
-argumentparser.add_argument("--pca", action="store_true",
+argument_parser = ArgumentParser()
+argument_parser.add_argument("--pca", action="store_true",
                             help="use PCA image filter defense")
-argumentparser.add_argument("--fast-ica", action="store_true",
+argument_parser.add_argument("--fast-ica", action="store_true",
                             help="use FastICA image filter defense")
-argumentparser.add_argument("--n-components", type=int, nargs="+",
+argument_parser.add_argument("--n-components", type=int, nargs="+",
                             help="number of components for image filters")
-argumentparser.add_argument("--epochs", type=int, default=-1,
+argument_parser.add_argument("--epochs", type=int, default=-1,
                             help="default: let the model choose")
-argumentparser.add_argument("--retraining", action="store_true",
+argument_parser.add_argument("--retraining", action="store_true",
                             help="apply filters in retraining fashion")
-argumentparser.add_argument("--random-seed", action="store_true",
+argument_parser.add_argument("--random-seed", action="store_true",
                             help="initialize model with random seed")
-arguments = argumentparser.parse_args()
+args = argument_parser.parse_args()
 
-EPOCHS = arguments.epochs
 PREFIX = os.environ.get('PREFIX', '.')
 
 X_train, y_train, X_test, y_test = mnist()
 
-if not arguments.random_seed:
+if not args.random_seed:
     K.clear_session()
     tf.set_random_seed(1234)
     np.random.seed(1234)
 
 no_defense_model = fc_100_100_10()
 print(f"Training {no_defense_model.name}...")
-train(no_defense_model, X_train, y_train, epochs=EPOCHS, verbose=True,
+train(no_defense_model, X_train, y_train, args.epochs, verbose=True,
       stop_on_stable_weights=True, reduce_lr_on_plateau=True,
       stop_on_stable_weights_patience=60, reduce_lr_on_plateau_patience=30)
 
@@ -45,19 +44,19 @@ print(f"Saving {no_defense_model.name}...")
 dirname = f"{PREFIX}/model/{no_defense_model.name}/"
 save_to_file(no_defense_model, dirname)
 
-for n_components in arguments.n_components:
-    if arguments.pca:
+for n_components in args.n_components:
+    if args.pca:
         filtered_model = pca_filtered_model(no_defense_model, X_train, n_components)
-    elif arguments.fast_ica:
+    elif args.fast_ica:
         filtered_model = fast_ica_filtered_model(no_defense_model, X_train, n_components)
 
     print(f"Saving {filtered_model.name}...")
     dirname = f"{PREFIX}/model/reconstruction/{filtered_model.name}/"
     save_to_file(filtered_model, dirname)
 
-    if arguments.retraining:
+    if args.retraining:
         print(f"Retraining {filtered_model.name}...")
-        train(filtered_model, X_train, y_train, epochs=EPOCHS, verbose=True,
+        train(filtered_model, X_train, y_train, args.epochs, verbose=True,
               stop_on_stable_weights=True,
               reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60,
               reduce_lr_on_plateau_patience=30)
