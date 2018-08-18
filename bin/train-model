@@ -8,11 +8,12 @@ from argparse import ArgumentParser
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from datasets import mnist
-from models import train, accuracy, save_to_file, fc_100_100_10, pca_filtered_model
+from models import train, accuracy, save_to_file, fc_100_100_10, pca_filtered_model, fast_ica_filtered_model
 
 argumentparser = ArgumentParser()
 argumentparser.add_argument('--no-defense', action='store_true', help='save fully connected network without any defense')
 argumentparser.add_argument('--pca', type=int, nargs='+', default=[], help='specify number of components to keep when using PCA')
+argumentparser.add_argument('--fast-ica', type=int, nargs='+', default=[], help='specify number of components to keep when using FastICA')
 argumentparser.add_argument('--epochs', type=int, required=True, help='number of epochs to train models for')
 argumentparser.add_argument('--retraining', action='store_true', help='use retraining defense when using filters')
 argumentparser.add_argument('--reconstruction', action='store_true', help='use retraining defense when using filters')
@@ -21,6 +22,7 @@ arguments = argumentparser.parse_args()
 
 NO_DEFENSE = arguments.no_defense
 PCA = arguments.pca
+FAST_ICA = arguments.fast_ica
 EPOCHS = arguments.epochs
 RETRAINING = arguments.retraining
 RECONSTRUCTION = arguments.reconstruction
@@ -66,5 +68,30 @@ for n_components in PCA:
 
         dirname = (
             f"{PREFIX}/model/retraining/pca-filtered-model-{n_components}-components/"
+        )
+        save_to_file(model, dirname)
+
+for n_components in FAST_ICA:
+    if RECONSTRUCTION:
+        model = fast_ica_filtered_model(fc_100_100_10(), X_train, n_components)
+        print(f"Training {model.name}...")
+        train(model, X_train, y_train, epochs=EPOCHS, verbose=True,
+              preprocess=False, stop_on_stable_weights=True,
+              reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60,
+              reduce_lr_on_plateau_patience=30)
+
+        dirname = f"{PREFIX}/model/reconstruction/fast-ica-filtered-model-{n_components}-components/"
+        save_to_file(model, dirname)
+
+    if RETRAINING:
+        model = fast_ica_filtered_model(fc_100_100_10(), X_train, n_components)
+        print(f"Training {model.name}...")
+        train(model, X_train, y_train, epochs=EPOCHS, verbose=True,
+              preprocess=True, stop_on_stable_weights=True,
+              reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60,
+              reduce_lr_on_plateau_patience=30)
+
+        dirname = (
+            f"{PREFIX}/model/retraining/fast-ica-filtered-model-{n_components}-components/"
         )
         save_to_file(model, dirname)
