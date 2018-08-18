@@ -11,22 +11,20 @@ from datasets import mnist
 from models import train, accuracy, save_to_file, fc_100_100_10, pca_filtered_model, fast_ica_filtered_model
 
 argumentparser = ArgumentParser()
-argumentparser.add_argument('--no-defense', action='store_true', help='save fully connected network without any defense')
-argumentparser.add_argument('--pca', type=int, nargs='+', default=[], help='specify number of components to keep when using PCA')
-argumentparser.add_argument('--fast-ica', type=int, nargs='+', default=[], help='specify number of components to keep when using FastICA')
+argumentparser.add_argument("--pca", action="store_true",
+                            help="use PCA image filter defense")
+argumentparser.add_argument("--fast-ica", action="store_true",
+                            help="use FastICA image filter defense")
+argumentparser.add_argument("--n-components", type=int, nargs="+",
+                            help="number of components for image filters")
 argumentparser.add_argument('--epochs', type=int, required=True, help='number of epochs to train models for')
-argumentparser.add_argument('--retraining', action='store_true', help='use retraining defense when using filters')
-argumentparser.add_argument('--reconstruction', action='store_true', help='use retraining defense when using filters')
+argumentparser.add_argument("--retraining", action="store_true",
+                            help="apply filters in retraining fashion")
 argumentparser.add_argument("--random-seed", action="store_true",
                             help="initialize model with random seed")
 arguments = argumentparser.parse_args()
 
-NO_DEFENSE = arguments.no_defense
-PCA = arguments.pca
-FAST_ICA = arguments.fast_ica
 EPOCHS = arguments.epochs
-RETRAINING = arguments.retraining
-RECONSTRUCTION = arguments.reconstruction
 PREFIX = os.environ.get('PREFIX', '.')
 
 X_train, y_train, X_test, y_test = mnist()
@@ -36,62 +34,35 @@ if not arguments.random_seed:
     tf.set_random_seed(1234)
     np.random.seed(1234)
 
-if NO_DEFENSE:
-    model = fc_100_100_10()
-    print(f"Training {model.name}...")
-    train(model, X_train, y_train, epochs=EPOCHS, verbose=True,
-          stop_on_stable_weights=True, reduce_lr_on_plateau=True,
-          stop_on_stable_weights_patience=60, reduce_lr_on_plateau_patience=30)
+no_defense_model = fc_100_100_10()
+print(f"Training {no_defense_model.name}...")
+train(no_defense_model, X_train, y_train, epochs=EPOCHS, verbose=True,
+      stop_on_stable_weights=True, reduce_lr_on_plateau=True,
+      stop_on_stable_weights_patience=60, reduce_lr_on_plateau_patience=30)
 
-    dirname = f"{PREFIX}/model/fc-100-100-10/"
-    save_to_file(model, dirname)
+print(f"Saving {no_defense_model.name}...")
+dirname = f"{PREFIX}/model/{no_defense_model.name}/"
+save_to_file(no_defense_model, dirname)
 
-for n_components in PCA:
-    if RECONSTRUCTION:
-        model = pca_filtered_model(fc_100_100_10(), X_train, n_components)
-        print(f"Training {model.name}...")
-        train(model, X_train, y_train, epochs=EPOCHS, verbose=True,
+for n_components in arguments.n_components:
+    if arguments.pca:
+        filtered_model = pca_filtered_model(no_defense_model, X_train, n_components)
+    elif arguments.fast_ica:
+        filtered_model = fast_ica_filtered_model(no_defense_model, X_train, n_components)
+
+    print(f"Saving {filtered_model.name}...")
+    dirname = f"{PREFIX}/model/reconstruction/{filtered_model.name}/"
+    save_to_file(filtered_model, dirname)
+
+    if arguments.retraining:
+        print(f"Retraining {filtered_model.name}...")
+        train(filtered_model, X_train, y_train, epochs=EPOCHS, verbose=True,
               preprocess=False, stop_on_stable_weights=True,
               reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60,
               reduce_lr_on_plateau_patience=30)
 
-        dirname = f"{PREFIX}/model/reconstruction/pca-filtered-model-{n_components}-components/"
-        save_to_file(model, dirname)
-
-    if RETRAINING:
-        model = pca_filtered_model(fc_100_100_10(), X_train, n_components)
-        print(f"Training {model.name}...")
-        train(model, X_train, y_train, epochs=EPOCHS, verbose=True,
-              preprocess=True, stop_on_stable_weights=True,
-              reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60,
-              reduce_lr_on_plateau_patience=30)
-
+        print(f"Saving {filtered_model.name}...")
         dirname = (
-            f"{PREFIX}/model/retraining/pca-filtered-model-{n_components}-components/"
+            f"{PREFIX}/model/retraining/{filtered_model.name}/"
         )
-        save_to_file(model, dirname)
-
-for n_components in FAST_ICA:
-    if RECONSTRUCTION:
-        model = fast_ica_filtered_model(fc_100_100_10(), X_train, n_components)
-        print(f"Training {model.name}...")
-        train(model, X_train, y_train, epochs=EPOCHS, verbose=True,
-              preprocess=False, stop_on_stable_weights=True,
-              reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60,
-              reduce_lr_on_plateau_patience=30)
-
-        dirname = f"{PREFIX}/model/reconstruction/fast-ica-filtered-model-{n_components}-components/"
-        save_to_file(model, dirname)
-
-    if RETRAINING:
-        model = fast_ica_filtered_model(fc_100_100_10(), X_train, n_components)
-        print(f"Training {model.name}...")
-        train(model, X_train, y_train, epochs=EPOCHS, verbose=True,
-              preprocess=True, stop_on_stable_weights=True,
-              reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60,
-              reduce_lr_on_plateau_patience=30)
-
-        dirname = (
-            f"{PREFIX}/model/retraining/fast-ica-filtered-model-{n_components}-components/"
-        )
-        save_to_file(model, dirname)
+        save_to_file(filtered_model, dirname)
