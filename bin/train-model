@@ -15,7 +15,7 @@ argument_parser.add_argument("--pca", action="store_true",
                             help="use PCA image filter defense")
 argument_parser.add_argument("--fast-ica", action="store_true",
                             help="use FastICA image filter defense")
-argument_parser.add_argument("--n-components", type=int, nargs="+",
+argument_parser.add_argument("--n-components", type=int, nargs="+", default=[],
                             help="number of components for image filters")
 argument_parser.add_argument("--epochs", type=int, default=-1,
                             help="default: let the model choose")
