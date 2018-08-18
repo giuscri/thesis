@@ -11,7 +11,7 @@ from keras.utils import to_categorical
 import keras.backend as K
 
 import numpy as np
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, FastICA
 
 from datasets import mnist
 from utils import dump_pickle_to_file, load_pickle_from_file, random_string
@@ -104,6 +104,31 @@ def pca_filtered_model(model, X_train=None, n_components=None, pca=None):
     filtered_model._pca = pca
     filtered_model.preprocessing_fn = partial(preprocessing_fn, pca=pca)
     filtered_model.name = f"pca-filtered-model-{n_components}-components"
+    return filtered_model
+
+
+def fast_ica_filtered_model(model, X_train=None, n_components=None, fast_ica=None):
+    element_shape = X_train.shape[1:]
+    pxs_per_element = np.prod(element_shape)
+
+    def preprocessing_fn(X, fast_ica):
+        flatX = X.reshape(-1, pxs_per_element)
+        filtered_flatX = fast_ica.inverse_transform(fast_ica.transform(flatX))
+        return filtered_flatX.reshape(-1, *element_shape)
+
+    filtered_model = clone_model(model)
+    filtered_model.compile(optimizer=model.optimizer, loss=model.loss, metrics=model.metrics)
+    filtered_model.set_weights(model.get_weights())
+
+    if fast_ica is None:
+        fast_ica = FastICA(n_components=n_components, random_state=1234)
+        flatX_train = X_train.reshape(-1, pxs_per_element)
+        fast_ica.fit(flatX_train)
+
+    n_components = fast_ica.n_components
+    filtered_model._fast_ica = fast_ica
+    filtered_model.preprocessing_fn = partial(preprocessing_fn, fast_ica=fast_ica)
+    filtered_model.name = f"fast-ica-filtered-model-{n_components}-components"
     return filtered_model
 
 
