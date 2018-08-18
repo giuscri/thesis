@@ -17,7 +17,8 @@ argumentparser.add_argument('--fast-ica', type=int, nargs='+', default=[], help=
 argumentparser.add_argument('--epochs', type=int, required=True, help='number of epochs to train models for')
 argumentparser.add_argument('--retraining', action='store_true', help='use retraining defense when using filters')
 argumentparser.add_argument('--reconstruction', action='store_true', help='use retraining defense when using filters')
-argumentparser.add_argument('--random-state', type=int, help='random state to specify for reproducible trainings')
+argumentparser.add_argument("--random-seed", action="store_true",
+                            help="initialize model with random seed")
 arguments = argumentparser.parse_args()
 
 NO_DEFENSE = arguments.no_defense
@@ -26,15 +27,14 @@ FAST_ICA = arguments.fast_ica
 EPOCHS = arguments.epochs
 RETRAINING = arguments.retraining
 RECONSTRUCTION = arguments.reconstruction
-RANDOM_STATE = arguments.random_state
 PREFIX = os.environ.get('PREFIX', '.')
 
 X_train, y_train, X_test, y_test = mnist()
 
-if RANDOM_STATE is not None:
+if not arguments.random_seed:
     K.clear_session()
-    tf.set_random_seed(RANDOM_STATE)
-    np.random.seed(RANDOM_STATE)
+    tf.set_random_seed(1234)
+    np.random.seed(1234)
 
 if NO_DEFENSE:
     model = fc_100_100_10()
