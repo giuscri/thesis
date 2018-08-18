@@ -49,6 +49,8 @@ def save_to_file(model, dirname):
     model.save_weights(f"{dirname}/weights.h5")
     if "_pca" in model.__dict__:
         dump_pickle_to_file(model._pca, f"{dirname}/pca.pkl")
+    elif "_fast_ica" in model.__dict__:
+        dump_pickle_to_file(model._fast_ica, f"{dirname}/fast-ica.pkl")
     return model
 
 
@@ -59,6 +61,10 @@ def load_from_file(dirname):
         pca = load_pickle_from_file(f"{dirname}/pca.pkl")
         X_train, _, _, _ = mnist()
         model = pca_filtered_model(model, X_train, pca=pca)
+    elif exists(f"{dirname}/fast-ica.pkl"):
+        fast_ica = load_pickle_from_file(f"{dirname}/fast-ica.pkl")
+        X_train, _, _, _ = mnist()
+        model = fast_ica_filtered_model(model, X_train, fast_ica=fast_ica)
     return model
 
 
