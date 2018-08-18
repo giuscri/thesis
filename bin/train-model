@@ -51,7 +51,7 @@ for n_components in args.n_components:
         filtered_model = fast_ica_filtered_model(no_defense_model, X_train, n_components)
 
     print(f"Saving {filtered_model.name}...")
-    dirname = f"{PREFIX}/model/reconstruction/{filtered_model.name}/"
+    dirname = f"{PREFIX}/model/{filtered_model.name}-reconstruction/"
     save_to_file(filtered_model, dirname)
 
     if args.retraining:
@@ -63,6 +63,6 @@ for n_components in args.n_components:
 
         print(f"Saving {filtered_model.name}...")
         dirname = (
-            f"{PREFIX}/model/retraining/{filtered_model.name}/"
+            f"{PREFIX}/model/{filtered_model.name}-retraining/"
         )
         save_to_file(filtered_model, dirname)
