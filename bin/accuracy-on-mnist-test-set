@@ -14,9 +14,7 @@ argument_parser.add_argument('--model', nargs="+", dest="model_paths",
 args = argument_parser.parse_args()
 
 if not args.model_paths:
-    model_paths = ["model/fc-100-100-10"]
-    model_paths.extend(glob("model/reconstruction/*"))
-    model_paths.extend(glob("model/retraining/*"))
+    model_paths = glob("model/*")
 else:
     model_paths = args.model_paths
 

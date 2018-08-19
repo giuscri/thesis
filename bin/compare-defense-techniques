@@ -21,8 +21,8 @@ with open(f"./attack/fgs/{session_id}/score_dictionary.json") as f:
 difference_per_curve = []
 
 for n_components in [784, 331, 100, 80, 60, 20]:
-    reconstruction_key = f"reconstruction/pca-filtered-model-{n_components}-components"
-    retraining_key = f"retraining/pca-filtered-model-{n_components}-components"
+    reconstruction_key = f"pca-filtered-model-{n_components}-components-reconstruction"
+    retraining_key = f"pca-filtered-model-{n_components}-components-retraining"
     reconstruction_score = score_dictionary[reconstruction_key]
     retraining_score = score_dictionary[retraining_key]
     score_difference = dictionary_difference(reconstruction_score, retraining_score)

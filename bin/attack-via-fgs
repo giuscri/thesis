@@ -38,9 +38,9 @@ model_dictionary = {}
 for filename in MODEL:
     model = load_from_file(filename)
     if 'reconstruction' in filename:
-        model_identifier = f'reconstruction/{model.name}'
+        model_identifier = f'{model.name}-reconstruction'
     elif 'retraining' in filename:
-        model_identifier = f'retraining/{model.name}'
+        model_identifier = f'{model.name}-retraining'
     else:
         model_identifier = model.name
 
