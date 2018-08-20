@@ -51,6 +51,7 @@ def save(image):
     sklearn_transformer_name = sklearn_transformer.__class__.__name__
     n_components = sklearn_transformer.n_components
     figure_name = f"filtered-input-{sklearn_transformer_name.lower()}-{n_components}-components.png"
+    print(f"Saving {figure_name}...")
     return plt.savefig(figure_name)
 
 filtered_input = filter(original_input)
