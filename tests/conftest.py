@@ -14,7 +14,7 @@ def freeze_random_state():
 
 @pytest.fixture
 def environ():
-    assert os.environ["PREFIX"] == "/tmp" or not "PREFIX" in os.environ
+    assert "PREFIX" not in os.environ or os.environ["PREFIX"] == "/tmp"
     os.environ["PREFIX"] = "/tmp"
     yield os.environ
     if "PREFIX" in os.environ:

@@ -47,9 +47,10 @@ class StopOnStableWeights(Callback):
 def save_to_file(model, dirname):
     makedirs(dirname, exist_ok=True)
     model.save_weights(f"{dirname}/weights.h5")
-    sklearn_transformer = model.sklearn_transformer
-    pickle_filename = f"{dirname}/{sklearn_transformer.__class__.__name__.lower()}.pkl"
-    dump_pickle_to_file(sklearn_transformer, pickle_filename)
+    if "sklearn_transformer" in model.__dict__:
+        sklearn_transformer = model.sklearn_transformer
+        pickle_filename = f"{dirname}/{sklearn_transformer.__class__.__name__.lower()}.pkl"
+        dump_pickle_to_file(sklearn_transformer, pickle_filename)
     return model
 
 
@@ -59,10 +60,11 @@ def load_from_file(dirname):
     X_train, _, _, _ = mnist()
     if exists(f"{dirname}/pca.pkl"):
         sklearn_transformer = load_pickle_from_file(f"{dirname}/pca.pkl")
+        model = filtered_model(model, X_train, sklearn_transformer)
     elif exists(f"{dirname}/fast-ica.pkl"):
         sklearn_transformer = load_pickle_from_file(f"{dirname}/fast-ica.pkl")
+        model = filtered_model(model, X_train, sklearn_transformer)
 
-    model = filtered_model(model, X_train, sklearn_transformer)
     return model
 
 
@@ -106,22 +108,28 @@ def filtered_model(model, X_train, sklearn_transformer=None):
     return filtered_model
 
 
-def pca_filtered_model(model, X_train, n_components, pca=None):
+def pca_filtered_model(model, X_train, n_components=None, pca=None):
+    element_shape = X_train.shape[1:]
+    pxs_per_element = np.prod(element_shape)
+
     if pca is None:
         pca = PCA(n_components=n_components, svd_solver="full")
         flatX_train = X_train.reshape(-1, pxs_per_element)
         pca.fit(flatX_train)
 
-    return filtered_model(model, X_train, n_components, sklearn_transformer=pca)
+    return filtered_model(model, X_train, sklearn_transformer=pca)
 
 
-def fastica_filtered_model(model, X_train, n_components, fastica=None):
+def fastica_filtered_model(model, X_train, n_components=None, fastica=None):
+    element_shape = X_train.shape[1:]
+    pxs_per_element = np.prod(element_shape)
+
     if fastica is None:
         fastica = FastICA(n_components=n_components)
         flatX_train = X_train.reshape(-1, pxs_per_element)
         fastica.fit(flatX_train)
 
-    return filtered_model(model, X_train, n_components, sklearn_transformer=fastica)
+    return filtered_model(model, X_train, sklearn_transformer=fastica)
 
 
 def _callbacks(reduce_lr_on_plateau=False, early_stopping=False,
