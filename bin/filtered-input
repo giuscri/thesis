@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+from argparse import ArgumentParser
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from datasets import mnist
+from sklearn.decomposition import PCA, FastICA
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
+argument_parser = ArgumentParser()
+argument_parser.add_argument('--class', default=7, type=int, dest="_class",
+                             help="class from which take the original input")
+argument_parser.add_argument("--pca", action="store_true",
+                             help="use PCA filter")
+argument_parser.add_argument("--fastica", action="store_true",
+                             help="use FastICA filter")
+argument_parser.add_argument("--n-components", type=int, required=True,
+                             help="how many components to retain when filtering")
+
+
+args = argument_parser.parse_args()
+
+X_train, y_train, X_test, y_test = mnist()
+
+original_input = None
+for X, y in zip(X_test, y_test):
+    if int(y) == args._class:
+        original_input = X
+
+if original_input is None:
+    print(f"No images of class {args._class}")
+    sys.exit(1)
+
+if args.pca:
+    sklearn_transformer = PCA(n_components=args.n_components, svd_solver="full")
+elif args.fastica:
+    sklearn_transformer = FastICA(n_components=args.n_components)
+
+sklearn_transformer.fit(X_train.reshape(-1, 784))
+
+def filter(image):
+    batch = [image.reshape(784)]
+    filtered_batch = sklearn_transformer.inverse_transform(sklearn_transformer.transform(batch))
+    return filtered_batch[0].reshape(28, 28)
+
+def save(image):
+    plt.imshow(image)
+    sklearn_transformer_name = sklearn_transformer.__class__.__name__
+    n_components = sklearn_transformer.n_components
+    figure_name = f"filtered-input-{sklearn_transformer_name.lower()}-{n_components}-components.png"
+    return plt.savefig(figure_name)
+
+filtered_input = filter(original_input)
+save(filtered_input)
