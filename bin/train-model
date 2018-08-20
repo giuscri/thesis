@@ -8,12 +8,12 @@ from argparse import ArgumentParser
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from datasets import mnist
-from models import train, accuracy, save_to_file, fc_100_100_10, pca_filtered_model, fast_ica_filtered_model
+from models import train, accuracy, save_to_file, fc_100_100_10, pca_filtered_model, fastica_filtered_model
 
 argument_parser = ArgumentParser()
 argument_parser.add_argument("--pca", action="store_true",
                             help="use PCA image filter defense")
-argument_parser.add_argument("--fast-ica", action="store_true",
+argument_parser.add_argument("--fastica", action="store_true",
                             help="use FastICA image filter defense")
 argument_parser.add_argument("--n-components", type=int, nargs="+", default=[],
                             help="number of components for image filters")
@@ -47,8 +47,8 @@ save_to_file(no_defense_model, dirname)
 for n_components in args.n_components:
     if args.pca:
         filtered_model = pca_filtered_model(no_defense_model, X_train, n_components)
-    elif args.fast_ica:
-        filtered_model = fast_ica_filtered_model(no_defense_model, X_train, n_components)
+    elif args.fastica:
+        filtered_model = fastica_filtered_model(no_defense_model, X_train, n_components)
 
     print(f"Saving {filtered_model.name}...")
     dirname = f"{PREFIX}/model/{filtered_model.name}-reconstruction/"

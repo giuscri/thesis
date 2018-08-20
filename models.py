@@ -47,24 +47,22 @@ class StopOnStableWeights(Callback):
 def save_to_file(model, dirname):
     makedirs(dirname, exist_ok=True)
     model.save_weights(f"{dirname}/weights.h5")
-    if "_pca" in model.__dict__:
-        dump_pickle_to_file(model._pca, f"{dirname}/pca.pkl")
-    elif "_fast_ica" in model.__dict__:
-        dump_pickle_to_file(model._fast_ica, f"{dirname}/fast-ica.pkl")
+    sklearn_transformer = model.sklearn_transformer
+    pickle_filename = f"{dirname}/{sklearn_transformer.__class__.__name__.lower()}.pkl"
+    dump_pickle_to_file(sklearn_transformer, pickle_filename)
     return model
 
 
 def load_from_file(dirname):
     model = fc_100_100_10()
     model.load_weights(f"{dirname}/weights.h5")
+    X_train, _, _, _ = mnist()
     if exists(f"{dirname}/pca.pkl"):
-        pca = load_pickle_from_file(f"{dirname}/pca.pkl")
-        X_train, _, _, _ = mnist()
-        model = pca_filtered_model(model, X_train, pca=pca)
+        sklearn_transformer = load_pickle_from_file(f"{dirname}/pca.pkl")
     elif exists(f"{dirname}/fast-ica.pkl"):
-        fast_ica = load_pickle_from_file(f"{dirname}/fast-ica.pkl")
-        X_train, _, _, _ = mnist()
-        model = fast_ica_filtered_model(model, X_train, fast_ica=fast_ica)
+        sklearn_transformer = load_pickle_from_file(f"{dirname}/fast-ica.pkl")
+
+    model = filtered_model(model, X_train, sklearn_transformer)
     return model
 
 
@@ -88,54 +86,42 @@ def fc_100_100_10():
     return model
 
 
-def pca_filtered_model(model, X_train=None, n_components=None, pca=None):
+def filtered_model(model, X_train, sklearn_transformer=None):
     element_shape = X_train.shape[1:]
     pxs_per_element = np.prod(element_shape)
 
-    def preprocessing_fn(X, pca):
+    def preprocessing_fn(X, sklearn_transformer):
         flatX = X.reshape(-1, pxs_per_element)
-        filtered_flatX = pca.inverse_transform(pca.transform(flatX))
+        filtered_flatX = sklearn_transformer.inverse_transform(sklearn_transformer.transform(flatX))
         return filtered_flatX.reshape(-1, *element_shape)
 
     filtered_model = clone_model(model)
     filtered_model.compile(optimizer=model.optimizer, loss=model.loss, metrics=model.metrics)
     filtered_model.set_weights(model.get_weights())
 
+    n_components = sklearn_trasformer.n_components
+    filtered_model.sklearn_transformer = sklearn_transformer
+    filtered_model.preprocessing_fn = partial(preprocessing_fn, sklearn_transformer=sklearn_transformer)
+    filtered_model.name = f"{sklearn_transformer.__class__.__name__}-filtered-model-{n_components}-components"
+    return filtered_model
+
+
+def pca_filtered_model(model, X_train, n_components, pca=None):
     if pca is None:
         pca = PCA(n_components=n_components, svd_solver="full")
         flatX_train = X_train.reshape(-1, pxs_per_element)
         pca.fit(flatX_train)
 
-    n_components = pca.n_components
-    filtered_model._pca = pca
-    filtered_model.preprocessing_fn = partial(preprocessing_fn, pca=pca)
-    filtered_model.name = f"pca-filtered-model-{n_components}-components"
-    return filtered_model
+    return filtered_model(model, X_train, n_components, sklearn_transformer=pca)
 
 
-def fast_ica_filtered_model(model, X_train=None, n_components=None, fast_ica=None):
-    element_shape = X_train.shape[1:]
-    pxs_per_element = np.prod(element_shape)
-
-    def preprocessing_fn(X, fast_ica):
-        flatX = X.reshape(-1, pxs_per_element)
-        filtered_flatX = fast_ica.inverse_transform(fast_ica.transform(flatX))
-        return filtered_flatX.reshape(-1, *element_shape)
-
-    filtered_model = clone_model(model)
-    filtered_model.compile(optimizer=model.optimizer, loss=model.loss, metrics=model.metrics)
-    filtered_model.set_weights(model.get_weights())
-
-    if fast_ica is None:
-        fast_ica = FastICA(n_components=n_components, random_state=1234)
+def fastica_filtered_model(model, X_train, n_components, fastica=None):
+    if fastica is None:
+        fastica = FastICA(n_components=n_components)
         flatX_train = X_train.reshape(-1, pxs_per_element)
-        fast_ica.fit(flatX_train)
+        fastica.fit(flatX_train)
 
-    n_components = fast_ica.n_components
-    filtered_model._fast_ica = fast_ica
-    filtered_model.preprocessing_fn = partial(preprocessing_fn, fast_ica=fast_ica)
-    filtered_model.name = f"fast-ica-filtered-model-{n_components}-components"
-    return filtered_model
+    return filtered_model(model, X_train, n_components, sklearn_transformer=fastica)
 
 
 def _callbacks(reduce_lr_on_plateau=False, early_stopping=False,
