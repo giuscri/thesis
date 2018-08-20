@@ -56,8 +56,9 @@ for n_components in args.n_components:
 
     if args.retraining:
         print(f"Retraining {filtered_model.name}...")
-        train(filtered_model, X_train, y_train, args.epochs, verbose=True,
-              stop_on_stable_weights=True,
+        filtered_X_train = filtered_model.preprocessing_fn(X_train)
+        train(filtered_model, filtered_X_train, y_train, args.epochs,
+              verbose=True, stop_on_stable_weights=True,
               reduce_lr_on_plateau=True, stop_on_stable_weights_patience=60,
               reduce_lr_on_plateau_patience=30)
 
