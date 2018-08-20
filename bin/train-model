@@ -63,7 +63,5 @@ for n_components in args.n_components:
               reduce_lr_on_plateau_patience=30)
 
         print(f"Saving {filtered_model.name}...")
-        dirname = (
-            f"{PREFIX}/model/{filtered_model.name}-retraining/"
-        )
+        dirname = f"{PREFIX}/model/{filtered_model.name}-retraining/"
         save_to_file(filtered_model, dirname)
