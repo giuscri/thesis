@@ -101,10 +101,10 @@ def filtered_model(model, X_train, sklearn_transformer=None):
     filtered_model.compile(optimizer=model.optimizer, loss=model.loss, metrics=model.metrics)
     filtered_model.set_weights(model.get_weights())
 
-    n_components = sklearn_trasformer.n_components
+    n_components = sklearn_transformer.n_components
     filtered_model.sklearn_transformer = sklearn_transformer
     filtered_model.preprocessing_fn = partial(preprocessing_fn, sklearn_transformer=sklearn_transformer)
-    filtered_model.name = f"{sklearn_transformer.__class__.__name__}-filtered-model-{n_components}-components"
+    filtered_model.name = f"{sklearn_transformer.__class__.__name__.lower()}-filtered-model-{n_components}-components"
     return filtered_model
 
 
