@@ -82,6 +82,7 @@ elif args.truncatedsvd:
 
 if not cached:
     print(f"Fitting {sklearn_transformer.__class__.__name__}...", end="")
+    sys.stdout.flush()
     sklearn_transformer.fit(X_train.reshape(-1, 784))
     print()
 
