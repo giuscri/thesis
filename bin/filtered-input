@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from datasets import mnist
-from sklearn.decomposition import PCA, FastICA
+from sklearn.decomposition import PCA, FastICA, KernelPCA
 
 import matplotlib
 matplotlib.use("Agg")
@@ -17,6 +17,8 @@ argument_parser.add_argument("--pca", action="store_true",
                              help="use PCA filter")
 argument_parser.add_argument("--fastica", action="store_true",
                              help="use FastICA filter")
+argument_parser.add_argument("--kernelpca", action="store_true",
+                             help="use KernelPCA filter")
 argument_parser.add_argument("--n-components", type=int, required=True,
                              help="how many components to retain when filtering")
 
@@ -38,6 +40,8 @@ if args.pca:
     sklearn_transformer = PCA(n_components=args.n_components, svd_solver="full")
 elif args.fastica:
     sklearn_transformer = FastICA(n_components=args.n_components)
+elif args.kernelpca:
+    sklearn_transformer = KernelPCA(n_components=args.n_components)
 
 sklearn_transformer.fit(X_train.reshape(-1, 784))
 
