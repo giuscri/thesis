@@ -64,7 +64,7 @@ elif args.nmf and os.path.exists(f"cache/nmf-{args.n_components}.pkl"):
         sklearn_transformer = pickle.load(f)
     cached = True
 elif args.truncatedsvd and os.path.exists(f"cache/truncatedsvd-{args.n_components}.pkl"):
-    with open(f"cache/nmf-{args.n_components}.pkl", "rb") as f:
+    with open(f"cache/truncatedsvd-{args.n_components}.pkl", "rb") as f:
         sklearn_transformer = pickle.load(f)
     cached = True
 elif args.pca:
