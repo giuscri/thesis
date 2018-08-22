@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from datasets import mnist
-from attacks import fast_gradient_sign
+from attacks import adversarial_example
 from models import load_from_file
 
 import matplotlib
@@ -33,7 +33,7 @@ if original_input is None:
     sys.exit(1)
 
 model = load_from_file(args.model_path)
-adversarial_input = fast_gradient_sign(model, [original_input], [args._class],
+adversarial_input = adversarial_example(model, [original_input], [args._class],
                                        eta=args.eta)[0]
 
 plt.imshow(adversarial_input)

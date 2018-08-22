@@ -36,7 +36,7 @@ def __fast_gradient_sign_tf_symbols(model, serializedX, serializedy_target):
     return X_sym, one_hot_y_target_sym, example_sym, eta_sym
 
 
-def fast_gradient_sign(model, X, y_target=None, eta=0.15):
+def adversarial_example(model, X, y_target=None, eta=0.15):
     assert y_target is None or len(y_target) == len(X)
     with_target = y_target is not None
 
@@ -56,9 +56,9 @@ def fast_gradient_sign(model, X, y_target=None, eta=0.15):
     return session.run(example_sym, feed_dict=feed_dict)
 
 
-def fgs_adversarial_score(model, X_test, y_test, eta=None, y_target=None):
+def adversarial_score(model, X_test, y_test, eta=None, y_target=None):
     X, y = filter_correctly_classified_examples(model, X_test, y_test)
-    adversarialX = fast_gradient_sign(model, X, y_target, eta)
+    adversarialX = adversarial_example(model, X, y_target, eta)
     fooling_examples, _ = filter_correctly_classified_examples(model, adversarialX, y)
     score = 1 - len(fooling_examples) / len(X)
     return score

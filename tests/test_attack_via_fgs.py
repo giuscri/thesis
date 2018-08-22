@@ -13,7 +13,7 @@ def prepare_and_teardown():
     shutil.rmtree("/tmp/attack", ignore_errors=True)
 
 
-def test_fgs_adversarial_score_when_using_reconstruction_defense(environ):
+def test_adversarial_score_when_using_reconstruction_defense(environ):
     command = [
         "python",
         "bin/attack-via-fgs",
@@ -42,7 +42,7 @@ def test_fgs_adversarial_score_when_using_reconstruction_defense(environ):
     assert np.allclose(actual, expected)
 
 
-def test_fgs_adversarial_score_when_using_retrain_defense(environ):
+def test_adversarial_score_when_using_retrain_defense(environ):
     command = [
         "python",
         "bin/attack-via-fgs",

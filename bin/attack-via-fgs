@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from datasets import mnist
 from models import fc_100_100_10, pca_filtered_model, train, load_from_file
-from attacks import fast_gradient_sign, fgs_adversarial_score
+from attacks import adversarial_example, adversarial_score
 from utils import random_string, dump_json_to_file
 
 logging.basicConfig(format='%(asctime)s - %(message)s')
@@ -59,8 +59,8 @@ score_dictionary = {k: {} for k in model_dictionary_keys}
 for model_identifier, eta in itertools.product(model_dictionary_keys, ETA):
     info(f'computing score for combination: ({model_identifier}, {eta})')
     model = model_dictionary[model_identifier]
-    adversarial_score = int(100 * fgs_adversarial_score(model, X_test, y_test, eta))
-    score_dictionary[model_identifier].update({eta: adversarial_score})
+    score = int(100 * adversarial_score(model, X_test, y_test, eta))
+    score_dictionary[model_identifier].update({eta: score})
 
 print(json.dumps(score_dictionary))
 dump_json_to_file(score_dictionary, f"{PREFIX}/attack/fgs/{SESSION_ID}/score_dictionary.json")
