@@ -6,7 +6,7 @@ import numpy as np
 def prepare_and_teardown():
     os.environ["PREFIX"] = "/tmp"
     command = ["python", "bin/train-model", "--epochs", "10", "--retraining",
-               "--pca", "--n-components", "784", "100"]
+               "--pca", "--n-components", "784"]
     subprocess.run(command)
     yield
     shutil.rmtree("/tmp/model", ignore_errors=True)
