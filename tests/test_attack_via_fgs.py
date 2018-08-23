@@ -16,10 +16,9 @@ def prepare_and_teardown():
 def test_adversarial_score_when_using_reconstruction_defense(environ):
     command = [
         "python",
-        "bin/attack-via-fgs",
+        "bin/adversarial-score",
         "--model",
         "/tmp/model/pca-filtered-model-784-components-reconstruction",
-        "/tmp/model/pca-filtered-model-100-components-reconstruction",
         "--eta",
         "0.05",
         "0.1",
@@ -27,28 +26,23 @@ def test_adversarial_score_when_using_reconstruction_defense(environ):
     ]
     process = subprocess.run(command, stdout=subprocess.PIPE)
     assert process.returncode == 0
-    result = json.loads(process.stdout.decode())
+    adversarial_score_dictionary = json.loads(process.stdout)
 
-    assert len(result.keys()) == 2
+    assert len(result.keys()) == 3
 
-    expected = np.array([22, 53, 93])
-    scoredict = result["pca-filtered-model-784-components-reconstruction"]
-    actual = np.array([scoredict["0.05"], scoredict["0.1"], scoredict["0.2"]])
-    assert np.allclose(actual, expected)
-
-    expected = np.array([15, 37, 82])
-    scoredict = result["pca-filtered-model-100-components-reconstruction"]
-    actual = np.array([scoredict["0.05"], scoredict["0.1"], scoredict["0.2"]])
+    expected = np.array([0.22, 0.53, 0.93])
+    actual = np.array([adversarial_score_dictionary["0.05"],
+                       adversarial_score_dictionary["0.1"],
+                       adversarial_score_dictionary["0.2"]])
     assert np.allclose(actual, expected)
 
 
 def test_adversarial_score_when_using_retrain_defense(environ):
     command = [
         "python",
-        "bin/attack-via-fgs",
+        "bin/adversarial-score",
         "--model",
         "/tmp/model/pca-filtered-model-784-components-retraining",
-        "/tmp/model/pca-filtered-model-100-components-retraining",
         "--eta",
         "0.05",
         "0.1",
@@ -56,16 +50,12 @@ def test_adversarial_score_when_using_retrain_defense(environ):
     ]
     process = subprocess.run(command, stdout=subprocess.PIPE)
     assert process.returncode == 0
-    result = json.loads(process.stdout)
+    adversarial_score_dictionary = json.loads(process.stdout)
 
-    assert len(result.keys()) == 2
+    assert len(result.keys()) == 3
 
-    expected = np.array([21, 61, 95])
-    scoredict = result["pca-filtered-model-784-components-retraining"]
-    actual = np.array([scoredict["0.05"], scoredict["0.1"], scoredict["0.2"]])
-    assert np.allclose(actual, expected)
-
-    expected = np.array([15, 44, 87])
-    scoredict = result["pca-filtered-model-100-components-retraining"]
-    actual = np.array([scoredict["0.05"], scoredict["0.1"], scoredict["0.2"]])
+    expected = np.array([0.21, 0.61, 0.95])
+    actual = np.array([adversarial_score_dictionary["0.05"],
+                       adversarial_score_dictionary["0.1"],
+                       adversarial_score_dictionary["0.2"]])
     assert np.allclose(actual, expected)
