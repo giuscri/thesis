@@ -14,11 +14,6 @@ from models import fc_100_100_10, pca_filtered_model, train, load_from_file
 from attacks import adversarial_example, adversarial_score
 from utils import random_string, dump_json_to_file
 
-logging.basicConfig(format='%(asctime)s - %(message)s')
-logger = logging.getLogger()
-logger.setLevel('INFO')
-info = lambda message: logger.info(message)
-
 argumentparser = argparse.ArgumentParser()
 argumentparser.add_argument('--plot', action='store_true', help='plot data')
 argumentparser.add_argument('--eta', nargs='+', type=float, help='values eta for generating adv/ examples')
@@ -57,7 +52,7 @@ model_dictionary_keys.sort(key=sort_key, reverse=True)
 score_dictionary = {k: {} for k in model_dictionary_keys}
 
 for model_identifier, eta in itertools.product(model_dictionary_keys, ETA):
-    info(f'computing score for combination: ({model_identifier}, {eta})')
+    print(f'computing score for combination: ({model_identifier}, {eta})')
     model = model_dictionary[model_identifier]
     score = int(100 * adversarial_score(model, X_test, y_test, eta))
     score_dictionary[model_identifier].update({eta: score})
