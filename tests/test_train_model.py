@@ -10,6 +10,7 @@ from models import fc_100_100_10, pca_filtered_model
 
 @pytest.fixture(autouse=True)
 def teardown():
+    yield
     shutil.rmtree("/tmp/model/", ignore_errors=True)
 
 
