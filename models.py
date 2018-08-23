@@ -6,7 +6,7 @@ from functools import partial
 from keras.models import Sequential, load_model, clone_model
 from keras.layers import Flatten, Dense, Activation
 from keras.optimizers import SGD
-from keras.callbacks import TensorBoard, EarlyStopping, ReduceLROnPlateau, Callback
+from keras.callbacks import EarlyStopping, ReduceLROnPlateau, Callback
 from keras.utils import to_categorical
 import keras.backend as K
 
@@ -155,7 +155,7 @@ def _callbacks(reduce_lr_on_plateau=False, early_stopping=False,
 
 
 def train(model, X_train, y_train, epochs=500, verbose=True,
-          early_stopping=False, tensorboard=True, reduce_lr_on_plateau=False,
+          early_stopping=False, reduce_lr_on_plateau=False,
           stop_on_stable_weights=False, early_stopping_patience=60,
           stop_on_stable_weights_patience=60, reduce_lr_on_plateau_patience=30):
 
@@ -168,10 +168,6 @@ def train(model, X_train, y_train, epochs=500, verbose=True,
     # stop_on_stable_weights_patience and early_stopping_patience must be a multiple
     # of reduce_lr_on_plateau_patience
 
-    if tensorboard:
-        prefix = environ.get("PREFIX", ".")
-        log_dir = f"{prefix}/model/tensorboardlogs/{model.name}/{random_string()}"
-        callbacks.append(TensorBoard(log_dir=log_dir, histogram_freq=0))
     callbacks = []
     if reduce_lr_on_plateau:
         callbacks.append(ReduceLROnPlateau(monitor="val_acc", patience=reduce_lr_on_plateau_patience))
