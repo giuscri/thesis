@@ -163,14 +163,24 @@ def train(model, X_train, y_train, epochs=500, verbose=True,
     num_classes = len(np.unique(y_train))
     one_hot_y_train = to_categorical(y_train, num_classes=num_classes)
 
-    callbacks = _callbacks(reduce_lr_on_plateau, early_stopping, stop_on_stable_weights,
-                           reduce_lr_on_plateau_patience, early_stopping_patience,
-                           stop_on_stable_weights_patience)
+    assert stop_on_stable_weights_patience // reduce_lr_on_plateau_patience > 1
+    assert early_stopping_patience // reduce_lr_on_plateau_patience > 1
+    # stop_on_stable_weights_patience and early_stopping_patience must be a multiple
+    # of reduce_lr_on_plateau_patience
 
     if tensorboard:
         prefix = environ.get("PREFIX", ".")
         log_dir = f"{prefix}/model/tensorboardlogs/{model.name}/{random_string()}"
         callbacks.append(TensorBoard(log_dir=log_dir, histogram_freq=0))
+    callbacks = []
+    if reduce_lr_on_plateau:
+        callbacks.append(ReduceLROnPlateau(monitor="val_acc", patience=reduce_lr_on_plateau_patience))
+
+    if early_stopping:
+        callbacks.append(EarlyStopping(monitor="val_acc", patience=early_stopping_patience))
+
+    if stop_on_stable_weights:
+        callbacks.append(StopOnStableWeights(patience=stop_on_stable_weights_patience))
 
     if epochs == -1: # when `epochs` is -1 train _forever_
         epochs = 10**100
