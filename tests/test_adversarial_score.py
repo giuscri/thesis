@@ -28,13 +28,13 @@ def test_adversarial_score_when_using_reconstruction_defense(environ):
     assert process.returncode == 0
     adversarial_score_dictionary = json.loads(process.stdout)
 
-    assert len(result.keys()) == 3
+    assert len(adversarial_score_dictionary.keys()) == 3
 
     expected = np.array([0.22, 0.53, 0.93])
     actual = np.array([adversarial_score_dictionary["0.05"],
                        adversarial_score_dictionary["0.1"],
                        adversarial_score_dictionary["0.2"]])
-    assert np.allclose(actual, expected)
+    assert np.allclose(actual, expected, atol=0.01)
 
 
 def test_adversarial_score_when_using_retrain_defense(environ):
@@ -52,10 +52,10 @@ def test_adversarial_score_when_using_retrain_defense(environ):
     assert process.returncode == 0
     adversarial_score_dictionary = json.loads(process.stdout)
 
-    assert len(result.keys()) == 3
+    assert len(adversarial_score_dictionary.keys()) == 3
 
     expected = np.array([0.21, 0.61, 0.95])
     actual = np.array([adversarial_score_dictionary["0.05"],
                        adversarial_score_dictionary["0.1"],
                        adversarial_score_dictionary["0.2"]])
-    assert np.allclose(actual, expected)
+    assert np.allclose(actual, expected, atol=0.01)
