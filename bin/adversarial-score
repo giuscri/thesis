@@ -14,14 +14,15 @@ from models import fc_100_100_10, pca_filtered_model, train, load_from_file
 from attacks import adversarial_example, adversarial_score
 from utils import random_string, dump_json_to_file
 
-argumentparser = argparse.ArgumentParser()
-argumentparser.add_argument('--plot', action='store_true', help='plot data')
-argumentparser.add_argument('--eta', nargs='+', type=float, help='values eta for generating adv/ examples')
-argumentparser.add_argument('--model', nargs='+', help='path to models to attack')
-arguments = argumentparser.parse_args()
+argument_parser = argparse.ArgumentParser()
+argument_parser.add_argument('--plot', action='store_true', help='plot data')
+argument_parser.add_argument('--model', nargs='+', dest="model_paths",
+                             help='path to models to attack')
+argument_parser.add_argument('--eta', nargs='+', type=float,
+                            help='values eta for generating adv/ examples')
+args = argument_parser.parse_args()
 
 PLOT = arguments.plot
-MODEL = arguments.model
 ETA = arguments.eta
 PREFIX = os.environ.get('PREFIX', '.')
 SESSION_ID = random_string()
@@ -30,7 +31,7 @@ X_train, y_train, X_test, y_test = mnist()
 
 model_dictionary = {}
 
-for filename in MODEL:
+for filename in args.model_paths:
     model = load_from_file(filename)
     if 'reconstruction' in filename:
         model_identifier = f'{model.name}-reconstruction'
