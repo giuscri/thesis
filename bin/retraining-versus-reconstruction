@@ -2,6 +2,10 @@
 
 import sys, os, json, argparse
 import numpy as np
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from datasets import mnist
+from models import train, fc_100_100_10, pca_filtered_model
+from attacks import adversarial_score
 
 def dictionary_difference(dict1, dict2):
     assert dict1.keys() == dict2.keys()
@@ -10,23 +14,32 @@ def dictionary_difference(dict1, dict2):
         r[k] = dict1[k] - dict2[k]
     return r
 
-argumentparser = argparse.ArgumentParser()
-argumentparser.add_argument('--session-id', required=True)
-arguments = argumentparser.parse_args()
-session_id = arguments.session_id
+argument_parser = argparse.ArgumentParser()
+args = argument_parser.parse_args()
 
-with open(f"./attack/fgs/{session_id}/score_dictionary.json") as f:
-    score_dictionary = json.load(f)
+X_train, y_train, X_test, y_test = mnist()
 
-difference_per_curve = []
+distance = []
+#for n_components in [784, 331, 100, 80, 60, 20]:
+for n_components in [784]:
+    reconstructed_model = pca_filtered_model(fc_100_100_10(), X_train, n_components)
+    train(reconstructed_model, X_train, y_train, epochs=10)
 
-for n_components in [784, 331, 100, 80, 60, 20]:
-    reconstruction_key = f"pca-filtered-model-{n_components}-components-reconstruction"
-    retraining_key = f"pca-filtered-model-{n_components}-components-retraining"
-    reconstruction_score = score_dictionary[reconstruction_key]
-    retraining_score = score_dictionary[retraining_key]
-    score_difference = dictionary_difference(reconstruction_score, retraining_score)
-    average_difference = np.mean(list(score_difference.values()))
-    difference_per_curve.append(average_difference)
+    retrained_model = pca_filtered_model(fc_100_100_10(), X_train, n_components)
+    X_train = retrained_model.preprocessing_fn(X_train)
+    train(retrained_model, X_train, y_train, epochs=10)
 
-print(np.mean(difference_per_curve))
+    print("Computing adversarial score for both models...", end="")
+    sys.stdout.flush()
+    #for eta in np.arange(0, 0.25, 0.01):
+    for eta in np.arange(0, 0.25, 0.01):
+        reconstructed_model_score = adversarial_score(reconstructed_model, X_test, y_test, eta)
+        retrained_model_score = adversarial_score(reconstructed_model, X_test, y_test, eta)
+        distance.append(retrained_model_score - reconstructed_model_score)
+    print()
+
+average_distance = np.mean(distance)
+if average_distance > 0:
+    print(f"Reconstruction is more effective: {average_distance}")
+else:
+    print(f"Retraining is more effective: {average_distance}")
