@@ -39,4 +39,9 @@ adversarial_input = adversarial_example(model, [original_input], [args._class],
 plt.imshow(adversarial_input)
 figure_name_eta = "".join(f"{args.eta}".split("."))
 figure_name = f"adversarial_input.{model.name}.{figure_name_eta}.{args._class}.png"
+print(f"Saving {figure_name}...", end="")
 plt.savefig(figure_name)
+print()
+
+plt.imshow(adversarial_input)
+plt.show()
