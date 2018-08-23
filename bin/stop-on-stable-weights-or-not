@@ -9,11 +9,16 @@ from datasets import mnist
 kwargs_list = [
     {"epochs": 1000},
     {"epochs": 500},
-    {"epochs": 500, "reduce_lr_on_plateau": True, "reduce_lr_on_plateau_patience": 30},
-    {"epochs": -1, "early_stopping": True, "early_stopping_patience": 60}, # 60 because that's a ~whole minute of training on GCP
-    {"epochs": -1, "stop_on_stable_weights": True, "stop_on_stable_weights_patience": 60},
-    {"epochs": -1, "early_stopping": True, "reduce_lr_on_plateau": True, "early_stopping_patience": 60},
-    {"epochs": -1, "stop_on_stable_weights": True, "reduce_lr_on_plateau": True, "reduce_lr_on_plateau_patience": 30},
+    {"epochs": 500, "reduce_lr_on_plateau": True,
+     "reduce_lr_on_plateau_patience": 30},
+    {"epochs": -1, "early_stopping": True,
+     "early_stopping_patience": 60}, # 60 because that's a ~whole minute of training on GCP
+    {"epochs": -1, "stop_on_stable_weights": True,
+     "stop_on_stable_weights_patience": 60},
+    {"epochs": -1, "early_stopping": True, "reduce_lr_on_plateau": True,
+     "early_stopping_patience": 60},
+    {"epochs": -1, "stop_on_stable_weights": True, "reduce_lr_on_plateau": True,
+     "reduce_lr_on_plateau_patience": 30},
 ]
 accuracies_list = []
 epochs_list = []
