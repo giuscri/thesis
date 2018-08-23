@@ -11,10 +11,37 @@ def name(transformer):
     n_components = transformer.n_components
     return f"{transformer.__class__.__name__.lower()}-{n_components}"
 
+argument_parser = argparse.ArgumentParser()
+argument_parser.add_argument("--all", action="store_true")
+argument_parser.add_argument("--fastica", action="store_true")
+argument_parser.add_argument("--incrementalpca", action="store_true")
+argument_parser.add_argument("--kernelpca", action="store_true")
+argument_parser.add_argument("--nmf", action="store_true")
+argument_parser.add_argument("--truncatedsvd", action="store_true")
+argument_parser.add_argument("--pca", action="store_true")
+
+args = argument_parser.parse_args()
+
+if args.all:
+    classes = [FastICA, IncrementalPCA, KernelPCA, NMF, TruncatedSVD, PCA]
+else:
+    classes = []
+    if args.fastica:
+        classes.append(FastICA)
+    if args.incrementalpca:
+        classes.append(IncrementalPCA)
+    if args.kernelpca:
+        classes.append(KernelPCA)
+    if args.nmf:
+        classes.append(NMF)
+    if args.truncatedsvd:
+        classes.append(TruncatedSVD)
+    if args.pca:
+        classes.append(PCA)
+
 X_train, _, _, _ = mnist()
 
 transformers = []
-classes = [FastICA, IncrementalPCA, KernelPCA, NMF, TruncatedSVD, PCA]
 for n_components in [784, 331, 100, 80, 60, 20]:
     for c in classes:
         if c is TruncatedSVD and n_components == 784:
