@@ -21,9 +21,11 @@ for n_components in [784, 331, 100, 80, 60, 20]:
             continue
 
         if c is KernelPCA:
-            transformer = c(n_components=n_components, fit_inverse_transform=True, n_jobs=-1)
-        else:
+            transformer = c(n_components=n_components, fit_inverse_transform=True, n_jobs=-1, random_state=1234)
+        elif c is IncrementalPCA:
             transformer = c(n_components=n_components)
+        else:
+            transformer = c(n_components=n_components, random_state=1234)
 
         transformers.append(transformer)
 
