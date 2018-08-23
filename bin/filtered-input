@@ -103,5 +103,10 @@ def save(image):
     print(f"Saving {figure_name}...")
     return plt.savefig(figure_name)
 
+def show(image):
+    plt.imshow(image)
+    plt.show()
+
 filtered_input = filter(original_input)
 save(filtered_input)
+show(filtered_input)
