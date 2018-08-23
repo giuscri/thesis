@@ -11,8 +11,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 argument_parser = ArgumentParser()
-argument_parser.add_argument('--class', default=7, type=int, dest="_class",
-                             help="class from which take the original input")
 argument_parser.add_argument("--pca", action="store_true",
                              help="use PCA filter")
 argument_parser.add_argument("--fastica", action="store_true",
@@ -33,14 +31,7 @@ args = argument_parser.parse_args()
 
 X_train, y_train, X_test, y_test = mnist()
 
-original_input = None
-for X, y in zip(X_test, y_test):
-    if int(y) == args._class:
-        original_input = X
-
-if original_input is None:
-    print(f"No images of class {args._class}")
-    sys.exit(1)
+original_input = X_test[0]
 
 cached = False
 if args.pca and os.path.exists(f"cache/pca-{args.n_components}.pkl"):
