@@ -20,8 +20,7 @@ args = argument_parser.parse_args()
 X_train, y_train, X_test, y_test = mnist()
 
 distance = []
-#for n_components in [784, 331, 100, 80, 60, 20]:
-for n_components in [784]:
+for n_components in [784, 331, 100, 80, 60, 20]:
     reconstructed_model = pca_filtered_model(fc_100_100_10(), X_train, n_components)
     train(reconstructed_model, X_train, y_train, epochs=10)
 
@@ -31,10 +30,9 @@ for n_components in [784]:
 
     print("Computing adversarial score for both models...", end="")
     sys.stdout.flush()
-    #for eta in np.arange(0, 0.25, 0.01):
     for eta in np.arange(0, 0.25, 0.01):
         reconstructed_model_score = adversarial_score(reconstructed_model, X_test, y_test, eta)
-        retrained_model_score = adversarial_score(reconstructed_model, X_test, y_test, eta)
+        retrained_model_score = adversarial_score(retrained_model, X_test, y_test, eta)
         distance.append(retrained_model_score - reconstructed_model_score)
     print()
 
