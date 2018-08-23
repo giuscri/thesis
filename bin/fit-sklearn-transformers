@@ -4,7 +4,7 @@ from sklearn.decomposition import (FastICA, IncrementalPCA, KernelPCA, NMF,
                                    TruncatedSVD, PCA)
 import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-import pickle
+import pickle, argparse
 from datasets import mnist
 
 def name(transformer):
