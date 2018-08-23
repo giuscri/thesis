@@ -14,7 +14,7 @@ argument_parser.add_argument('--model', nargs="+", dest="model_paths",
 args = argument_parser.parse_args()
 
 if not args.model_paths:
-    model_paths = glob("model/*")
+    model_paths = glob("model/*") # compute accuracy for all the found models
 else:
     model_paths = args.model_paths
 
