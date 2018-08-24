@@ -21,10 +21,10 @@ def test_pca_when_reconstruction_is_saved(environ):
     assert process.returncode == 0
 
     created_files = [
-        "/tmp/model/pca-filtered-model-100-components-reconstruction/weights.h5",
-        "/tmp/model/pca-filtered-model-100-components-reconstruction/pca.pkl",
-        "/tmp/model/pca-filtered-model-20-components-reconstruction/weights.h5",
-        "/tmp/model/pca-filtered-model-20-components-reconstruction/pca.pkl",
+        "/tmp/model/pca-filtered-model-100-components/weights.h5",
+        "/tmp/model/pca-filtered-model-100-components/pca.pkl",
+        "/tmp/model/pca-filtered-model-20-components/weights.h5",
+        "/tmp/model/pca-filtered-model-20-components/pca.pkl",
     ]
     for f in created_files:
         assert os.path.exists(f)

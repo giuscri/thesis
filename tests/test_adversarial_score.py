@@ -18,7 +18,7 @@ def test_adversarial_score_when_using_reconstruction_defense(environ):
         "python",
         "bin/adversarial-score",
         "--model",
-        "/tmp/model/pca-filtered-model-784-components-reconstruction",
+        "/tmp/model/pca-filtered-model-784-components",
         "--eta",
         "0.05",
         "0.1",
