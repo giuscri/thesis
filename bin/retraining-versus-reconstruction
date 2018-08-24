@@ -46,7 +46,16 @@ for n_components in [784, 331, 100, 80, 60, 20]:
     train(retrained_model, X_train, y_train, epochs=10)
 
     best_model = compare_two_models(reconstructed_model, retrained_model)
-    if best_model is reconstructed_model:
-        print(f"Reconstruction is more effective: {average_distance}")
+
+    reretrained_model = pca_filtered_model(fc_100_100_10(), X_train, n_components)
+    train(reretrained_model, X_train, y_train, epochs=10)
+    X_train = retrained_model.preprocessing_fn(X_train)
+    train(reretrained_model, X_train, y_train, epochs=10)
+
+    best_model = compare_two_models(best_model, reretrained_model)
+    if best_model is reretrained_model:
+        print(f"Training twice is more effective")
+    elif best_model is reconstructed_model:
+        print(f"Reconstruction is more effective")
     else:
-        print(f"Retraining is more effective: {average_distance}")
+        print(f"Retraining is more effective")
