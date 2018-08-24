@@ -55,7 +55,7 @@ for n_components in [784, 331, 100, 80, 60, 20]:
 
     reretrained_model = pca_filtered_model(fc_100_100_10(), X_train, n_components)
     train(reretrained_model, X_train, y_train, epochs=1, stop_on_stable_weights=True)
-    X_train = retrained_model.preprocessing_fn(X_train)
+    X_train = reretrained_model.preprocessing_fn(X_train)
     train(reretrained_model, X_train, y_train, epochs=1, stop_on_stable_weights=True)
 
     best_model = compare_two_models(best_model, reretrained_model)
