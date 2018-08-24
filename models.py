@@ -132,6 +132,54 @@ def fastica_filtered_model(model, X_train, n_components=None, fastica=None):
     return filtered_model(model, X_train, sklearn_transformer=fastica)
 
 
+def incrementalpca_filtered_model(model, X_train, n_components=None, incrementalpca=None):
+    element_shape = X_train.shape[1:]
+    pxs_per_element = np.prod(element_shape)
+
+    if incrementalpca is None:
+        incrementalpca = Incrementalpca(n_components=n_components)
+        flatX_train = X_train.reshape(-1, pxs_per_element)
+        incrementalpca.fit(flatX_train)
+
+    return filtered_model(model, X_train, sklearn_transformer=incrementalpca)
+
+
+def nmf_filtered_model(model, X_train, n_components=None, nmf=None):
+    element_shape = X_train.shape[1:]
+    pxs_per_element = np.prod(element_shape)
+
+    if nmf is None:
+        nmf = Nmf(n_components=n_components)
+        flatX_train = X_train.reshape(-1, pxs_per_element)
+        nmf.fit(flatX_train)
+
+    return filtered_model(model, X_train, sklearn_transformer=nmf)
+
+
+def truncatedsvd_filtered_model(model, X_train, n_components=None, truncatedsvd=None):
+    element_shape = X_train.shape[1:]
+    pxs_per_element = np.prod(element_shape)
+
+    if truncatedsvd is None:
+        truncatedsvd = Truncatedsvd(n_components=n_components)
+        flatX_train = X_train.reshape(-1, pxs_per_element)
+        truncatedsvd.fit(flatX_train)
+
+    return filtered_model(model, X_train, sklearn_transformer=truncatedsvd)
+
+
+def kernelpca_filtered_model(model, X_train, n_components=None, kernelpca=None):
+    element_shape = X_train.shape[1:]
+    pxs_per_element = np.prod(element_shape)
+
+    if kernelpca is None:
+        kernelpca = Kernelpca(n_components=n_components)
+        flatX_train = X_train.reshape(-1, pxs_per_element)
+        kernelpca.fit(flatX_train)
+
+    return filtered_model(model, X_train, sklearn_transformer=kernelpca)
+
+
 def _callbacks(reduce_lr_on_plateau=False, early_stopping=False,
                stop_on_stable_weights=False, reduce_lr_on_plateau_patience=30,
                early_stopping_patience=60, stop_on_stable_weights_patience=60):
