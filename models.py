@@ -11,7 +11,7 @@ from keras.utils import to_categorical
 import keras.backend as K
 
 import numpy as np
-from sklearn.decomposition import PCA, FastICA
+from sklearn.decomposition import PCA, FastICA, NMF, KernelPCA, IncrementalPCA, TruncatedSVD
 
 from datasets import mnist
 from utils import dump_pickle_to_file, load_pickle_from_file, random_string
@@ -149,7 +149,7 @@ def nmf_filtered_model(model, X_train, n_components=None, nmf=None):
     pxs_per_element = np.prod(element_shape)
 
     if nmf is None:
-        nmf = Nmf(n_components=n_components)
+        nmf = NMF(n_components=n_components)
         flatX_train = X_train.reshape(-1, pxs_per_element)
         nmf.fit(flatX_train)
 
