@@ -44,7 +44,8 @@ class StopOnStableWeights(Callback):
         assert len(self.collected_weights) == self.len_collected_weights - 1
 
 
-def save_to_file(model, dirname):
+def save_to_file(model, prefix="."):
+    dirname = f"{prefix}/model/{model.name}"
     makedirs(dirname, exist_ok=True)
     model.save_weights(f"{dirname}/weights.h5")
     if "sklearn_transformer" in model.__dict__:

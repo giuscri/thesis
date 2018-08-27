@@ -58,8 +58,7 @@ train(no_defense_model, X_train, y_train, args.epochs, verbose=True,
       stop_on_stable_weights_patience=60, reduce_lr_on_plateau_patience=30)
 
 print(f"Saving {no_defense_model.name}...")
-dirname = f"{PREFIX}/model/{no_defense_model.name}/"
-save_to_file(no_defense_model, dirname)
+save_to_file(no_defense_model, PREFIX)
 
 for n_components in args.n_components:
     if args.pca:
@@ -68,8 +67,7 @@ for n_components in args.n_components:
                                             n_components, pca=pca)
 
         print(f"Saving {filtered_model.name}...")
-        dirname = f"{PREFIX}/model/{filtered_model.name}/"
-        save_to_file(filtered_model, dirname)
+        save_to_file(filtered_model, PREFIX)
 
     if args.fastica:
         fastica = cached(f"fastica-{n_components}")
@@ -77,8 +75,7 @@ for n_components in args.n_components:
                                                 n_components, fastica=fastica)
 
         print(f"Saving {filtered_model.name}...")
-        dirname = f"{PREFIX}/model/{filtered_model.name}/"
-        save_to_file(filtered_model, dirname)
+        save_to_file(filtered_model, PREFIX)
 
     if args.incrementalpca:
         incrementalpca = cached(f"incrementalpca-{n_components}")
@@ -87,8 +84,7 @@ for n_components in args.n_components:
                                                        incrementalpca=incrementalpca)
 
         print(f"Saving {filtered_model.name}...")
-        dirname = f"{PREFIX}/model/{filtered_model.name}/"
-        save_to_file(filtered_model, dirname)
+        save_to_file(filtered_model, PREFIX)
 
     if args.nmf:
         nmf = cached(f"nmf-{n_components}")
@@ -96,8 +92,7 @@ for n_components in args.n_components:
                                             n_components, nmf=nmf)
 
         print(f"Saving {filtered_model.name}...")
-        dirname = f"{PREFIX}/model/{filtered_model.name}/"
-        save_to_file(filtered_model, dirname)
+        save_to_file(filtered_model, PREFIX)
 
     if args.truncatedsvd:
         truncatedsvd = cached(f"truncatedsvd-{n_components}")
@@ -106,8 +101,7 @@ for n_components in args.n_components:
                                                      truncatedsvd=truncatedsvd)
 
         print(f"Saving {filtered_model.name}...")
-        dirname = f"{PREFIX}/model/{filtered_model.name}/"
-        save_to_file(filtered_model, dirname)
+        save_to_file(filtered_model, PREFIX)
 
     if args.kernelpca:
         kernelpca = cached(f"kernelpca-{n_components}")
@@ -115,5 +109,4 @@ for n_components in args.n_components:
                                                   n_components, kernelpca=kernelpca)
 
         print(f"Saving {filtered_model.name}...")
-        dirname = f"{PREFIX}/model/{filtered_model.name}/"
-        save_to_file(filtered_model, dirname)
+        save_to_file(filtered_model, PREFIX)
