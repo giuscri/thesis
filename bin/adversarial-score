@@ -28,6 +28,7 @@ X_train, y_train, X_test, y_test = mnist()
 
 for model_path in args.model_paths:
     model = load_from_file(model_path)
+    print(f"Computing adversarial score against {model.name}...", file=sys.stderr)
     adversarial_score_dictionary = {}
     for eta in args.eta_list:
         score = round(adversarial_score(model, X_test, y_test, eta), 3)
