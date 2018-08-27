@@ -192,28 +192,6 @@ def kernelpca_filtered_model(model, X_train, n_components=None, kernelpca=None):
     return filtered_model(model, X_train, sklearn_transformer=kernelpca)
 
 
-def _callbacks(reduce_lr_on_plateau=False, early_stopping=False,
-               stop_on_stable_weights=False, reduce_lr_on_plateau_patience=30,
-               early_stopping_patience=60, stop_on_stable_weights_patience=60):
-
-        assert stop_on_stable_weights_patience // reduce_lr_on_plateau_patience > 1
-        assert early_stopping_patience // reduce_lr_on_plateau_patience > 1
-        # stop_on_stable_weights_patience and early_stopping_patience must be a multiple
-        # of reduce_lr_on_plateau_patience
-
-        r = []
-        if reduce_lr_on_plateau:
-            r.append(ReduceLROnPlateau(monitor="val_acc", patience=reduce_lr_on_plateau_patience))
-
-        if early_stopping:
-            r.append(EarlyStopping(monitor="val_acc", patience=early_stopping_patience))
-
-        if stop_on_stable_weights:
-            r.append(StopOnStableWeights(patience=stop_on_stable_weights_patience))
-
-        return r
-
-
 def train(model, X_train, y_train, epochs=500, verbose=True,
           early_stopping=False, reduce_lr_on_plateau=False,
           stop_on_stable_weights=False, early_stopping_patience=60,
