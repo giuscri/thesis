@@ -100,7 +100,7 @@ for n_components in args.n_components:
         save_to_file(filtered_model, dirname)
 
     if args.truncatedsvd:
-        truncatedsvd = cached(f"nmf-{n_components}")
+        truncatedsvd = cached(f"truncatedsvd-{n_components}")
         filtered_model = truncatedsvd_filtered_model(no_defense_model, X_train,
                                                      n_components,
                                                      truncatedsvd=truncatedsvd)
