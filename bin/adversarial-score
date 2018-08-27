@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from datasets import mnist
 from models import fc_100_100_10, pca_filtered_model, train, load_from_file
 from attacks import adversarial_example, adversarial_score
-from utils import random_string, dump_json_to_file
+from utils import dump_json_to_file
 
 argument_parser = argparse.ArgumentParser()
 argument_parser.add_argument('--model', nargs="+", dest="model_paths",

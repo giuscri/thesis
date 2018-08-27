@@ -4,12 +4,6 @@ import json
 import pickle
 
 
-def random_string(length=10):
-    r = hexlify(os.urandom(32)[:length]).decode()
-    assert len(r) == length or "Too many characters requested"
-    return r
-
-
 def dump_pickle_to_file(obj, path):
     dirname, basename = os.path.split(path)
     os.makedirs(dirname, exist_ok=True)

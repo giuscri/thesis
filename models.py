@@ -14,7 +14,7 @@ import numpy as np
 from sklearn.decomposition import PCA, FastICA, NMF, KernelPCA, IncrementalPCA, TruncatedSVD
 
 from datasets import mnist
-from utils import dump_pickle_to_file, load_pickle_from_file, random_string
+from utils import dump_pickle_to_file, load_pickle_from_file
 
 
 class StopOnStableWeights(Callback):
