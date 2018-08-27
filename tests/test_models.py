@@ -96,7 +96,8 @@ def test_nmf_filtered_model_is_built_correctly(mnist):
 
 def test_kernelpca_filtered_model_is_built_correctly(mnist):
     X_train, y_train, X_test, y_test = mnist
-    model = kernelpca_filtered_model(fc_100_100_10(), X_train, 10)
+    model = kernelpca_filtered_model(fc_100_100_10(), X_train[:1000], 10)
+    # use a slice of X_train or you may run out of memory on Travis builds
 
     assert type(model.sklearn_transformer) is KernelPCA
     assert model.name == "kernelpca-filtered-model-10-components"
