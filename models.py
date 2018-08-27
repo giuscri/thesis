@@ -61,8 +61,20 @@ def load_from_file(dirname):
     if exists(f"{dirname}/pca.pkl"):
         sklearn_transformer = load_pickle_from_file(f"{dirname}/pca.pkl")
         model = filtered_model(model, X_train, sklearn_transformer)
-    elif exists(f"{dirname}/fast-ica.pkl"):
-        sklearn_transformer = load_pickle_from_file(f"{dirname}/fast-ica.pkl")
+    elif exists(f"{dirname}/fastica.pkl"):
+        sklearn_transformer = load_pickle_from_file(f"{dirname}/fastica.pkl")
+        model = filtered_model(model, X_train, sklearn_transformer)
+    elif exists(f"{dirname}/nmf.pkl"):
+        sklearn_transformer = load_pickle_from_file(f"{dirname}/nmf.pkl")
+        model = filtered_model(model, X_train, sklearn_transformer)
+    elif exists(f"{dirname}/kernelpca.pkl"):
+        sklearn_transformer = load_pickle_from_file(f"{dirname}/kernelpca.pkl")
+        model = filtered_model(model, X_train, sklearn_transformer)
+    elif exists(f"{dirname}/truncatedsvd.pkl"):
+        sklearn_transformer = load_pickle_from_file(f"{dirname}/truncatedsvd.pkl")
+        model = filtered_model(model, X_train, sklearn_transformer)
+    elif exists(f"{dirname}/incrementalpca.pkl"):
+        sklearn_transformer = load_pickle_from_file(f"{dirname}/incrementalpca.pkl")
         model = filtered_model(model, X_train, sklearn_transformer)
 
     return model
