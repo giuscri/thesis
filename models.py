@@ -149,7 +149,7 @@ def incrementalpca_filtered_model(model, X_train, n_components=None, incremental
     pxs_per_element = np.prod(element_shape)
 
     if incrementalpca is None:
-        incrementalpca = Incrementalpca(n_components=n_components)
+        incrementalpca = IncrementalPCA(n_components=n_components)
         flatX_train = X_train.reshape(-1, pxs_per_element)
         incrementalpca.fit(flatX_train)
 
@@ -173,7 +173,7 @@ def truncatedsvd_filtered_model(model, X_train, n_components=None, truncatedsvd=
     pxs_per_element = np.prod(element_shape)
 
     if truncatedsvd is None:
-        truncatedsvd = Truncatedsvd(n_components=n_components)
+        truncatedsvd = TruncatedSVD(n_components=n_components)
         flatX_train = X_train.reshape(-1, pxs_per_element)
         truncatedsvd.fit(flatX_train)
 
@@ -185,7 +185,7 @@ def kernelpca_filtered_model(model, X_train, n_components=None, kernelpca=None):
     pxs_per_element = np.prod(element_shape)
 
     if kernelpca is None:
-        kernelpca = Kernelpca(n_components=n_components)
+        kernelpca = KernelPCA(n_components=n_components)
         flatX_train = X_train.reshape(-1, pxs_per_element)
         kernelpca.fit(flatX_train)
 
