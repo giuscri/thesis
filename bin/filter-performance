@@ -17,10 +17,18 @@ args = argument_parser.parse_args()
 
 _, _, X_test, y_test = mnist()
 
+result = []
 for model_path in args.model_paths:
+    print(f"Computing for {model_path} ...", end="")
+    sys.stdout.flush()
     model = load_from_file(model_path)
 
     mnist_accuracy = accuracy(model, X_test, y_test)
     mnist_adversarial_score = adversarial_score(model, X_test, y_test, eta=0.1)
+    result.append((model_path, mnist_accuracy, mnist_adversarial_score))
+    print()
 
-    print(f"## {model.name}: accuracy {mnist_accuracy}, adversarial_score {mnist_adversarial_score}")
+result.sort(key=lambda triplet: triplet[2])
+for triplet in result:
+    model_path, mnist_accuracy, mnist_adversarial_score = triplet
+    print(f"{model_path}: accuracy {mnist_accuracy}, adversarial_score {mnist_adversarial_score}")
