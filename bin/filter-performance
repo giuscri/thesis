@@ -7,6 +7,15 @@ from datasets import mnist
 from models import load_from_file, accuracy
 from attacks import adversarial_score
 
+def key(triplet):
+    _, mnist_accuracy, mnist_adversarial_score = triplet
+
+    # we want to stay close to max accuracy while as far
+    # as possible from best adv/ score. This assumes accuracy
+    # can't be better than the one for unfiltered model, and the attacker
+    # can't perform better than what performs against the unfiltered model.
+    return 1 - (0.974 - mnist_accuracy) + (0.81 - mnist_adversarial_score)
+
 argument_parser = ArgumentParser()
 argument_parser.add_argument("--model", nargs="+", dest="model_paths",
                              required=True, help="path to model to use")
@@ -28,7 +37,8 @@ for model_path in args.model_paths:
     result.append((model_path, mnist_accuracy, mnist_adversarial_score))
     print()
 
-result.sort(key=lambda triplet: triplet[2])
+result.sort(key=key)
+
 for triplet in result:
     model_path, mnist_accuracy, mnist_adversarial_score = triplet
     print(f"{model_path}: accuracy {mnist_accuracy}, adversarial_score {mnist_adversarial_score}")
