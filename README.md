@@ -27,6 +27,6 @@ make pytest
 
 ## How to run
 ```
-pipenv run ./bin/train-model --help
+pipenv run ./bin/train-model.py --help
 ```
 

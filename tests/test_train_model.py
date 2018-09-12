@@ -15,7 +15,7 @@ def teardown():
 
 
 def test_pca_when_reconstruction_is_saved(environ):
-    command = ["python", "bin/train-model", "--epochs", "0", "--pca",
+    command = ["python", "bin/train-model.py", "--epochs", "0", "--pca",
                "--n-components", "100", "20"]
     process = subprocess.run(command, stdout=subprocess.PIPE)
     assert process.returncode == 0
@@ -31,7 +31,7 @@ def test_pca_when_reconstruction_is_saved(environ):
 
 
 def test_no_defense_network_is_saved(environ):
-    command = ["python", "bin/train-model", "--epochs", "0"]
+    command = ["python", "bin/train-model.py", "--epochs", "0"]
     process = subprocess.run(command, stdout=subprocess.PIPE)
     assert process.returncode == 0
 
@@ -41,7 +41,7 @@ def test_no_defense_network_is_saved(environ):
 def test_models_with_same_random_state_have_same_loss_and_accuracy(environ, mnist):
     X_train, _, X_test, y_test = mnist
     one_hot_y_test = keras.utils.to_categorical(y_test, 10)
-    command = ["python", "bin/train-model", "--pca",
+    command = ["python", "bin/train-model.py", "--pca",
                "--n-components", "20", "--epochs", "2"]
 
     process = subprocess.run(command, stdout=subprocess.PIPE)

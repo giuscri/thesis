@@ -5,7 +5,7 @@ import numpy as np
 @pytest.fixture(autouse=True)
 def prepare_and_teardown():
     os.environ["PREFIX"] = "/tmp"
-    command = ["python", "bin/train-model", "--epochs", "10",
+    command = ["python", "bin/train-model.py", "--epochs", "10",
                "--pca", "--n-components", "784"]
     subprocess.run(command)
     yield
@@ -16,7 +16,7 @@ def prepare_and_teardown():
 def test_adversarial_score_when_using_reconstruction_defense(environ):
     command = [
         "python",
-        "bin/adversarial-score",
+        "bin/adversarial-score.py",
         "--model",
         "/tmp/model/pca-filtered-model-784-components",
         "--eta",
