@@ -7,7 +7,7 @@ dockerbuild:
 	sudo docker build -t thesis -f Dockerfile .
 
 dockertest: dockerbuild
-	sudo docker run --rm thesis python -m pytest -sv --cov=. --cov-config=.coveragerc tests/
+	sudo docker run --rm thesis python -m pytest -sv --cov=. --cov=bin tests/
 
 pytest:
 	pipenv run python -m pytest -v -s -x
